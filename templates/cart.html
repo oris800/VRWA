@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>עגלת קניות</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cart_style.css') }}">
+</head>
+<body>
+
+    <div class="cart-container">
+        <div class="cart-header">
+            <h1>עגלת הקניות שלך</h1>
+            <img src="{{ url_for('static', filename='imgs/shopping-cart.png') }}" alt="עגלת קניות" class="cart-icon">
+        </div>
+
+        {% if cart_items %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>מוצר</th>
+                    <th>מחיר</th>
+                    <th>כמות</th>
+                    <th>סה"כ</th>
+                    <th></th> </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td class="product-cell">
+                        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="product-image">
+                        <span>{{ item.name }}</span>
+                    </td>
+                    <td>₪{{ "%.2f"|format(item.price) }}</td>
+                    <td>
+                        <input type="number" value="{{ item.quantity }}" min="1" class="quantity-input">
+                    </td>
+                    <td>₪{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                    <td>
+                        <a href="/remove-from-cart/{{ item.id }}" class="remove-btn">הסר</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <div class="total-row">
+                <span>סכום ביניים:</span>
+                <span id="subtotal">₪{{ "%.2f"|format(subtotal) }}</span>
+            </div>
+            <div class="total-row grand-total">
+                <span>סה"כ לתשלום:</span>
+                <span id="grand-total">₪{{ "%.2f"|format(grand_total) }}</span>
+            </div>
+            <a href="/checkout" class="checkout-btn">מעבר לתשלום</a>
+        </div>
+        
+        {% else %}
+        <div class="empty-cart-message">
+            <p>עגלת הקניות שלך ריקה.</p>
+            <a href="/">חזרה לחנות</a>
+        </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>

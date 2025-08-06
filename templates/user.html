@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_style.css') }}">
+</head>
+<body>
+
+    {% if message %}
+        <div class="message" style="color: {{ message.color }}; border: 1px solid {{ message.color }}; padding: 10px; margin: 10px; border-radius: 5px;">
+            {{ message.text }}
+        </div>
+    {% endif %}
+
+    <div class="user-card">
+        <h1>{{ user_name }}</h1>
+        <hr>
+        <p><strong>ID:</strong> {{ user_id }}</p>
+        <p><strong>Username:</strong> {{ user_name }}</p>
+        <p><strong>your security question is: </strong> {{ security_question }}</p>
+        <p><strong>you have: {{ user_cash }}$  </p> 
+        <details closed> <summary><strong>Change Password</strong></summary>
+            <form method="POST" class="change-password-form">
+                <label for="current_password">Current Password:</label><br>
+                <input type="password" id="current_password" name="current_password" required><br>
+
+                <label for="new_password">New Password:</label><br>
+                <input type="password" id="new_password" name="new_password" required><br>
+
+                <label for="confirm_password">Confirm New Password:</label><br>
+                <input type="password" id="confirm_password" name="confirm_password" required><br>
+
+                <input type="hidden" name="uid" value="{{ user_name_encoded }}">
+
+                <button type="submit">Submit</button>
+            </form>
+        </details>
+
+        <a href="{{ url_for('logout') }}" class="logout-button">התנתק</a>
+    </div>
+
+</body>
+</html>

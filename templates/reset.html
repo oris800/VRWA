@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Reset</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset_style.css') }}">
+</head>
+<body>
+    <div class="background-container"></div>
+
+    <div class="reset-wrapper">
+        <div class="reset-box">
+            <header>
+                <h1>Password Reset</h1>
+            </header>
+
+            <main>
+                {% if message %}
+                    <div class="alert" style="color: {{ message.color }}; border-color: {{ message.color }};">
+                        {{ message.text }}
+                    </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('reset') }}">
+                    
+                    {# --- השלב השלישי והחדש: איפוס הסיסמה --- #}
+                    {% if allow_password_reset %}
+                        <input type="hidden" name="username" value="{{ username }}">
+                        <h3>Password Reset for {{ username }}</h3>
+                        <div class="form-group">
+                            <input type="password" id="new_password" name="new_password" placeholder="New Password" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm New Password" required>
+                        </div>
+                        <button type="submit">Reset Password</button>
+
+                    {# --- השלב השני: הצגת שאלת האבטחה --- #}
+                    {% elif security_question %}
+                        <input type="hidden" name="username" value="{{ username }}">
+                        <h3>Hello {{ username }},</h3>
+                        <p><strong>{{ security_question }}</strong></p>
+                        <div class="form-group">
+                             <input type="text" id="security_answer" name="security_answer" placeholder="Enter your answer here" required>
+                        </div>
+                        <button type="submit">Verify Answer</button>
+                    
+                    {# --- השלב הראשון: בקשת שם משתמש --- #}
+                    {% else %}
+                        <div class="form-group">
+                            <input type="text" id="username" name="username" placeholder="Enter username" required>
+                        </div>
+                        <button type="submit">submit</button>
+                    {% endif %}
+                </form>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

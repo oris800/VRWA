@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetroPwn :: Main</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index_style.css') }}">
+    <style>
+        /* הוספתי עיצוב קטן כדי שהקישור ייראה טוב עם שאר העיצוב */
+        .user-greeting a {
+            color: #00ff00;
+            text-decoration: none; /* מסיר את הקו התחתון */
+        }
+        .user-greeting a:hover {
+            text-decoration: underline; /* מוסיף קו תחתון במעבר עכבר */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>RETRO-PWN</h1>
+            <p>> The Vulnerable Vintage Computer Store</p>
+            
+            {% if username %}
+                <div class="user-greeting">
+                    <a href="{{ url_for('user_page') }}">
+                        <p>שלום, {{ username }}</p>
+                    </a>
+                </div>
+            {% endif %}
+            </header>
+
+        <nav>
+            <a href="{{ url_for('home') }}">דף_הבית</a>
+            <a href="{{ url_for('login_page') }}">התחברות</a>
+            <a href="{{ url_for('products_page') }}">מוצרים</a>
+        </nav>
+
+        <main>
+            {% if security_question %}
+            <div class="security-question-box">
+                <h3>שאלת אבטחה:</h3>
+                <p>{{ security_question }}</p>
+            </div>
+            {% endif %}
+
+            <h2>--[ LATEST ARRIVALS ]--</h2>
+            <div class="product-showcase">
+                
+                <div class="product-card">
+                    <img src="{{ url_for('static', filename='imgs/computers/Amiga500_system.jpg') }}" alt="Amiga 500">
+                    <h3>Amiga 500</h3>
+                </div>
+
+                <div class="product-card">
+                    <img src="{{ url_for('static', filename='imgs/computers/1024px-Apple-II.jpg') }}" alt="Apple II">
+                    <h3>Apple II</h3>
+                </div>
+                
+                <div class="product-card">
+                    <img src="{{ url_for('static', filename='imgs/computers/Computer_macintosh_128k,_1984_(all_about_Apple_onlus).jpg') }}" alt="Macintosh 128k">
+                    <h3>Macintosh 128k</h3>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

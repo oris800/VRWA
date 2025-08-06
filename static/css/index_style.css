@@ -1,0 +1,77 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #000000;
+    color: #00ff00;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    border: 2px solid #00ff00;
+    padding: 15px;
+    box-shadow: 0 0 15px #00ff00;
+}
+header h1 {
+    font-size: 2.5em;
+    text-shadow: 0 0 5px #00ff00;
+    margin: 10px 0;
+}
+header p {
+    font-size: 1.1em;
+    color: #a0a0a0;
+    font-style: italic;
+}
+nav {
+    border-top: 2px solid #00ff00;
+    border-bottom: 2px solid #00ff00;
+    padding: 10px 0;
+    margin: 20px 0;
+}
+nav a {
+    color: #00ff00;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+}
+nav a:hover {
+    background-color: #00ff00;
+    color: #000000;
+}
+main h2 {
+    font-size: 2em;
+}
+.product-showcase {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.product-card {
+    border: 2px solid #00ff00;
+    width: 250px;
+    padding: 10px;
+}
+.product-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    /* אפקט של מסך מונוכרום ישן */
+    filter: grayscale(100%) brightness(1.5) contrast(1.2);
+}
+.product-card h3 {
+    margin: 10px 0 0;
+    font-size: 1.2em;
+}
+/* עיצוב לבלוק שאלת אבטחה */
+.security-question-box {
+    margin: 30px auto;
+    max-width: 600px;
+    padding: 15px;
+    border: 1px dashed #00ff00;
+    text-align: right;
+}
+.security-question-box h3 {
+    margin-bottom: 10px;
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetroPwn - מוצרים</title>
+    <style>
+        body { font-family: sans-serif; }
+        h1 { text-align: center; }
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: right; }
+        th { background-color: #f2f2f2; }
+        .action-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .action-button:hover {
+            background-color: #45a049;
+        }
+        form {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>קטלוג המחשבים שלנו</h1>
+    </header>
+
+    <nav style="text-align: center;">
+        <a href="/">דף הבית</a>
+    </nav>
+
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>שם המחשב</th>
+                    <th>שנת יצור</th>
+                    <th>מחיר</th>
+                    <th>פעולה</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in products %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.release_year }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('product', id=item.id) }}">
+                            <button type="submit" class="action-button">הוסף לסל</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+
+</body>
+</html>
