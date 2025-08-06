@@ -1,28 +1,65 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>עגלת קניות</title>
+    <title>Shopping Cart</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cart_style.css') }}">
+    <style>
+        /* Style for the large order button */
+        .order-now-btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #28a745, #218838);
+            border: none;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .order-now-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        /* Style for the message box */
+        .message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
 
     <div class="cart-container">
+
+        {% if message %}
+            <div class="message" style="color: {{ message.color }}; border-color: {{ message.color }}; background-color: {{ message.color }}20;">
+                {{ message.text }}
+            </div>
+        {% endif %}
         <div class="cart-header">
-            <h1>עגלת הקניות שלך</h1>
-            <img src="{{ url_for('static', filename='imgs/shopping-cart.png') }}" alt="עגלת קניות" class="cart-icon">
+            <h1>Shopping Cart | {{user_name}} | cash: {{user_cash}}$ </h1>
+            <img src="{{ url_for('static', filename='imgs/shopping-cart.png') }}" alt="Shopping Cart" class="cart-icon">
         </div>
 
         {% if cart_items %}
         <table class="cart-table">
             <thead>
                 <tr>
-                    <th>מוצר</th>
-                    <th>מחיר</th>
-                    <th>כמות</th>
-                    <th>סה"כ</th>
-                    <th></th> </tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                </tr>
             </thead>
             <tbody>
                 {% for item in cart_items %}
@@ -31,35 +68,24 @@
                         <img src="{{ item.image_url }}" alt="{{ item.name }}" class="product-image">
                         <span>{{ item.name }}</span>
                     </td>
-                    <td>₪{{ "%.2f"|format(item.price) }}</td>
-                    <td>
-                        <input type="number" value="{{ item.quantity }}" min="1" class="quantity-input">
-                    </td>
-                    <td>₪{{ "%.2f"|format(item.price * item.quantity) }}</td>
-                    <td>
-                        <a href="/remove-from-cart/{{ item.id }}" class="remove-btn">הסר</a>
-                    </td>
+                    <td>${{ "%.2f"|format(item.price) }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
         <div class="cart-summary">
-            <div class="total-row">
-                <span>סכום ביניים:</span>
-                <span id="subtotal">₪{{ "%.2f"|format(subtotal) }}</span>
-            </div>
             <div class="total-row grand-total">
-                <span>סה"כ לתשלום:</span>
-                <span id="grand-total">₪{{ "%.2f"|format(grand_total) }}</span>
+                <span>Total:</span>
+                <span id="grand-total">${{ "%.2f"|format(grand_total) }}</span>
             </div>
-            <a href="/checkout" class="checkout-btn">מעבר לתשלום</a>
+            <a href="/checkout" class="order-now-btn">Order Now!</a>
         </div>
         
         {% else %}
         <div class="empty-cart-message">
-            <p>עגלת הקניות שלך ריקה.</p>
-            <a href="/">חזרה לחנות</a>
+            <p>Your shopping cart is empty.</p>
+            <a href="/">Back to Shop</a>
         </div>
         {% endif %}
     </div>

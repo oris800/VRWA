@@ -1,5 +1,4 @@
 from flask import Flask, render_template,request, redirect, url_for, session
-from user_model import User
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
@@ -239,8 +238,40 @@ def reset():
 @app.route('/cart',methods=['POST',"GET"])
 def cart():
     if "username" in session:
- 
-         return render_template("cart.html")
+
+         user_info = db.session.execute(text(f"SELECT * FROM users WHERE username = '{session['username']}'")).fetchone()
+         userid = user_info[0]
+         
+         cart_items_records = db.session.execute(text(f"SELECT * FROM cart_items WHERE user_id = '{userid}'")).fetchall()
+         items_for_template = [] 
+         total_price = 0
+         for item in cart_items_records:
+             P = db.session.execute(text(f"SELECT * FROM products WHERE id = '{ item[2]}'")).fetchone()               
+             total_price = total_price + P[3]
+             product_details = db.session.execute(text(f"SELECT * FROM products WHERE id = '{ item[2]}'")).fetchone()
+             product_data = {
+                "id": product_details[0],
+                "name": product_details[1],
+                "price": product_details[3],
+                "image_url": product_details[4]
+            }
+             items_for_template.append(product_data)
+            
+         return render_template("cart.html", 
+                               cart_items=items_for_template, 
+                               grand_total=total_price,user_name=user_info[1],user_cash=user_info[5])
+    if request.method == "POST":
+            user_cash = user_info[5]
+            if total_price > user_cash:
+                message = {
+                "text": "you dont have engthe monnay",
+                "color": "red"
+                }
+                return render_template("cart.html", 
+                               cart_items=items_for_template, 
+                               grand_total=total_price,user_name=user_info[1],user_cash=user_info[5],message=message)
+
+
     else:
         return "you are not authorized user, please <a href='/login'>login</a>",401
 
