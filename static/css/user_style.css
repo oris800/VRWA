@@ -1,79 +1,149 @@
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    text-align: center;
-    background-color: #f4f4f9;
-    margin-top: 50px;
+/* General Body and Wrapper Styles */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #eef2f3; /* Light background from the theme */
 }
 
+.page-wrapper {
+    display: flex;
+    flex-direction: column; /* Allow message to sit above the card */
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* User Card - Main Teal Container */
 .user-card {
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    display: inline-block;
-    width: 320px;
+    background-color: #008080; /* Dark Teal background */
+    color: #fff;
+    padding: 25px 35px;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 500px;
     text-align: left;
 }
 
-h1 {
-    color: #333;
+.card-header h1 {
     text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
 }
 
-p {
-    color: #555;
+.card-content p {
     font-size: 1.1em;
+    margin: 10px 0;
 }
 
-strong {
-    color: #000;
+.card-content strong {
+    color: #b2dfdb; /* Lighter teal color for emphasis */
 }
 
-form {
-    margin-top: 10px;
-}
-
-input[type="text"],
-input[type="password"] {
-    width: 95%;
-    padding: 8px;
-    margin: 5px 0;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-
-button {
-    margin-top: 10px;
-    padding: 8px 16px;
+hr {
     border: none;
-    border-radius: 5px;
-    background-color: #007BFF;
-    color: white;
-    font-size: 1em;
+    border-top: 1px solid #469990; /* Mid-tone teal border */
+    margin: 25px 0;
+}
+
+/* Collapsible Password Section */
+.password-details summary {
+    font-size: 1.1em;
+    font-weight: bold;
     cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
 }
 
-button:hover {
-    background-color: #0056b3;
+.password-details summary:hover {
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
-details {
-    margin-top: 20px;
+.change-password-form {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 10px;
+    border-radius: 8px;
 }
 
-/* עיצוב לכפתור ההתנתקות */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 2px solid #469990;
+    border-radius: 8px;
+    background-color: #f0f8f7;
+    font-size: 1em;
+    color: #333;
+}
+
+/* Buttons */
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: #28a745; /* Green for primary action */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+.submit-btn:hover {
+    background-color: #218838;
+}
+
 .logout-button {
     display: block;
-    width: 100px;
-    margin: 20px auto;
-    padding: 10px;
-    background-color: #f44336;
+    width: 90%;
+    max-width: 200px;
+    margin: 30px auto 10px auto;
+    padding: 12px;
+    background-color: #e74c3c; /* Red for destructive action */
     color: white;
     text-align: center;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+.logout-button:hover {
+    background-color: #c0392b;
 }
 
-.logout-button:hover {
-    background-color: #da190b;
+/* Message Box for Info/Errors */
+.message {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: white;
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box;
+    text-align: center;
+}
+.message.message-error {
+    background-color: #e74c3c; /* Red for errors */
+}
+.message.message-success {
+    background-color: #28a745; /* Green for success */
+}
+.message.message-info {
+    background-color: #3498db; /* Blue for info */
 }

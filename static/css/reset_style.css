@@ -1,66 +1,69 @@
+/* General Body and Wrapper Styles */
 body, html {
     height: 100%;
     margin: 0;
     font-family: Arial, sans-serif;
-    overflow: hidden;
+    background-color: #eef2f3; /* Light background from the theme */
 }
 
-.background-container {
-    background-image: url("../imgs/pages/floppy_disk.jpg");
-    background-size: cover;
-    background-position: center;
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-}
-
-.reset-wrapper {
+.page-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
-    background-color: rgba(225, 225, 225, 0.8);
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-.reset-box {
-    background-color: rgba(255, 255, 255, 0.6);
+/* Main Content Box - Teal Theme */
+.content-box {
+    background-color: #008080; /* Dark Teal background */
+    color: #fff;
     padding: 30px 40px;
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    width: 450px;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 480px;
     text-align: center;
 }
 
 header h1 {
-    font-size: 1.8em;
-    color: #333;
-    font-weight: normal;
+    font-size: 2em;
     margin-bottom: 25px;
 }
 
-.form-group, p, h3 {
+main h3 {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+main p {
+    color: #e0f2f1;
     margin-bottom: 15px;
 }
-
-h3 {
-    font-size: 1.2em;
-    color: #333;
+main p.security-question {
+    margin-bottom: 5px;
+}
+main strong {
+    color: #fff;
+    font-size: 1.1em;
 }
 
-p {
-    color: #444;
+/* Form Input Fields */
+.form-group {
+    margin-bottom: 20px;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     box-sizing: border-box;
-    border: 1px solid #555;
-    background-color: #fff;
+    border: 2px solid #469990; /* Mid-tone teal border */
+    border-radius: 10px;
+    background-color: #f0f8f7; /* Very light mint/teal background */
     text-align: center;
+    font-size: 1em;
+    color: #333;
 }
 
 input::placeholder {
@@ -68,37 +71,45 @@ input::placeholder {
     font-style: italic;
 }
 
-button[type="submit"] {
+input:focus {
+    outline: none;
+    border-color: #92cac4; /* Lightest teal on focus */
+    box-shadow: 0 0 10px rgba(146, 202, 196, 0.5);
+}
+
+/* Submit Button */
+.submit-btn {
     width: 100%;
-    padding: 12px;
+    padding: 15px;
     margin-top: 10px;
-    background-color: #557a95;
+    background-color: #28a745; /* Green color for primary actions */
     color: white;
     border: none;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 1.2em;
     font-weight: bold;
     transition: background-color 0.3s ease;
 }
 
-button[type="submit"]:hover {
-    background-color: #415a6e;
+.submit-btn:hover {
+    background-color: #218838;
 }
 
-/* Styling for Flash messages (Updated to match login page style) */
-.alert {
-    padding: 10px;
+/* Message Box for Errors/Success */
+.message {
+    padding: 12px 20px;
     margin-bottom: 20px;
-    border: 2px solid; /* Border color will be inherited from specific classes */
-    border-radius: 4px;
+    border-radius: 8px;
     font-weight: bold;
-    background-color: transparent; /* Ensure no background color */
+    color: white;
 }
-.alert-error {
-    color: #a94442;
-    border-color: #a94442; /* Use text color for border */
+.message.message-error {
+    background-color: #e74c3c; /* Red for errors */
 }
-.alert-success {
-    color: #3c763d;
-    border-color: #3c763d; /* Use text color for border */
+.message.message-success {
+    background-color: #28a745; /* Green for success */
+}
+.message.message-info {
+    background-color: #3498db; /* Blue for info */
 }

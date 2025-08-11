@@ -1,0 +1,173 @@
+/* General Body and Wrapper Styles */
+body, html {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #eef2f3; /* Light background from the theme */
+}
+
+.page-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Main Content Container */
+.content-container {
+    width: 100%;
+    max-width: 1200px;
+    background-color: #fff; /* A clean white card for the main content */
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 20px;
+}
+
+.page-header h1 {
+    color: #008080; /* Dark Teal for the main title */
+    margin: 0;
+}
+.page-header p {
+    color: #555;
+    font-size: 1.1em;
+}
+
+/* Navigation and Dropdown */
+.page-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.home-link {
+    color: #008080;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: #f0f8f7;
+    color: #008080;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #92cac4;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.dropbtn:hover {
+    background-color: #e0f2f1;
+    border-color: #469990;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+    color: #008080;
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Product Grid Layout */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px; /* Space between cards */
+}
+
+/* Individual Product Card */
+.product-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.product-card-image {
+    width: 100%;
+    height: 200px;
+    background-color: #f5f5f5;
+}
+.product-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image covers the area nicely */
+}
+
+.product-card-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.product-name {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    color: #333;
+}
+.product-details {
+    color: #777;
+    margin: 0 0 10px 0;
+    font-size: 0.9em;
+}
+.product-price {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #008080;
+    margin: auto 0 15px 0; /* Pushes price down */
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745; /* Green for primary action */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+.add-to-cart-btn:hover {
+    background-color: #218838;
+}

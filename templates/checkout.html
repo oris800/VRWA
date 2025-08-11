@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Completed Successfully</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cart_style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <header class="top-bar">
+        <i class="fas fa-shopping-cart top-icon"></i>
+        <span>Order Completed | {{ user_name }}</span>
+    </header>
+
+    <div class="main-container">
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="message message-{{ category | default('error') }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    
+        <div class="checkout-content">
+            
+            <div class="order-completion">
+                <h2>Purchase Completed Successfully!</h2>
+                <p>Thank you for your purchase. Your order has been successfully placed.</p>
+            </div>
+            
+            <h3>Ordered Products:</h3>
+            <div class="items-list">
+                {% for item in ordered_items %}
+                <div class="item-card">
+                    <img src="{{ item.image_url }}" alt="{{ item.name }}" class="product-image">
+                    <div class="item-details">
+                        <p>Name: {{ item.name }}</p>
+                        <p>Unit Price: ${{ "%.2f"|format(item.price) }}</p>
+                        <p>Quantity: {{ item.quantity }}</p>
+                    </div>
+                    <div class="item-total">
+                        <p>Total per Product: ${{ "%.2f"|format(item.price * item.quantity) }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="order-details">
+                <h3>Order Details:</h3>
+                <p><strong>Name: </strong>{{ user_name }}</p>
+                <p><strong>Total Amount: </strong>${{ "%.2f"|format(total) }}</p>
+                <p><strong>Order ID: </strong>{{ order_id }}</p>
+            </div>
+            
+        </div>
+        
+    </div>
+
+</body>
+</html>

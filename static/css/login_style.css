@@ -1,53 +1,59 @@
+/* General Body and Wrapper Styles */
 body, html {
     height: 100%;
     margin: 0;
     font-family: Arial, sans-serif;
-    overflow: hidden;
+    background-color: #eef2f3; /* Same light background as the cart page */
 }
 
-body {
-    background-image: url("../imgs/pages/apple-lisa-computer-1200x788.png");
-    background-size: cover;
-    background-position: center;
-}
-
-.login-wrapper {
+.page-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.2); 
+    padding: 20px;
+    box-sizing: border-box;
 }
 
+/* Login Box - Main Teal Container */
 .login-box {
-    background-color: rgba(255, 255, 255, 0.7);
-    padding: 20px 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    width: 400px;
+    background-color: #008080; /* Dark Teal background */
+    color: #fff;
+    padding: 30px 40px;
+    border-radius: 25px; /* Large rounded corners */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 450px;
     text-align: center;
 }
 
 header h1 {
-    font-size: 1.8em;
-    color: #333;
-    font-weight: normal;
+    font-size: 2em;
+    margin-bottom: 5px;
+}
+
+header p {
+    font-size: 1.1em;
+    color: #b2dfdb; /* Lighter teal color for subtitle */
     margin-bottom: 30px;
 }
 
+/* Form Input Fields */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 input[type="text"],
 input[type="password"] {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #fff;
+    border: 2px solid #469990; /* Mid-tone teal border */
+    border-radius: 10px;
+    background-color: #f0f8f7; /* Very light mint/teal background */
     text-align: center;
+    font-size: 1em;
+    color: #333;
 }
 
 input::placeholder {
@@ -55,42 +61,54 @@ input::placeholder {
     font-style: italic;
 }
 
-button[type="submit"] {
+input:focus {
+    outline: none;
+    border-color: #92cac4; /* Lightest teal on focus */
+    box-shadow: 0 0 10px rgba(146, 202, 196, 0.5);
+}
+
+/* Login Button - Green like the 'Order' button */
+.login-btn {
     width: 100%;
-    padding: 12px;
+    padding: 15px;
     margin-top: 10px;
-    background-color: #557a95;
+    background-color: #28a745; /* Green color from cart */
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 1.2em;
     font-weight: bold;
     transition: background-color 0.3s ease;
 }
 
-button[type="submit"]:hover {
-    background-color: #415a6e;
+.login-btn:hover {
+    background-color: #218838; /* Darker green on hover */
 }
 
-.forgot-password {
-    margin-top: 20px;
+/* Extra Links (Forgot Password) */
+.extra-links {
+    margin-top: 25px;
 }
 
-.forgot-password a {
-    color: #557a95;
+.extra-links a {
+    color: #b2dfdb; /* Light teal for visibility */
     text-decoration: none;
-    font-style: italic;
 }
 
-.forgot-password a:hover {
+.extra-links a:hover {
     text-decoration: underline;
 }
 
+/* Message Box for Errors/Success */
 .message {
-    margin-bottom: 20px;
-    font-weight: bold;
     padding: 10px;
-    border: 1px solid;
-    border-radius: 4px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: white;
+}
+
+.message.message-error {
+    background-color: #e74c3c; /* Red for errors */
 }

@@ -7,51 +7,60 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/reset_style.css') }}">
 </head>
 <body>
-    <div class="background-container"></div>
-
-    <div class="reset-wrapper">
-        <div class="reset-box">
+    <div class="page-wrapper">
+        <div class="content-box">
             <header>
                 <h1>Password Reset</h1>
             </header>
 
             <main>
-                {% if message %}
-                    <div class="alert" style="color: {{ message.color }}; border-color: {{ message.color }};">
-                        {{ message.text }}
-                    </div>
+<!-- קוד מתוקן -->
+{% if message %}
+    <div class="message message-{{ message.color | default('error') }}">
+        {{ message.text }}
+    </div>
+{% endif %}
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="message message-{{ category | default('error') }}">{{ message }}</div>
+                    {% endfor %}
                 {% endif %}
+                {% endwith %}
 
                 <form method="POST" action="{{ url_for('reset') }}">
                     
-                    {# --- השלב השלישי והחדש: איפוס הסיסמה --- #}
+                    {# --- Step 3: Set New Password --- #}
                     {% if allow_password_reset %}
                         <input type="hidden" name="username" value="{{ username }}">
-                        <h3>Password Reset for {{ username }}</h3>
+                        <h3>Set New Password for {{ username }}</h3>
                         <div class="form-group">
                             <input type="password" id="new_password" name="new_password" placeholder="New Password" required>
                         </div>
                         <div class="form-group">
                             <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm New Password" required>
                         </div>
-                        <button type="submit">Reset Password</button>
+                        <button type="submit" class="submit-btn">Reset Password</button>
 
-                    {# --- השלב השני: הצגת שאלת האבטחה --- #}
+                    {# --- Step 2: Answer Security Question --- #}
                     {% elif security_question %}
                         <input type="hidden" name="username" value="{{ username }}">
-                        <h3>Hello {{ username }},</h3>
+                        <h3>Hello, {{ username }}</h3>
+                        <p class="security-question">Your security question is:</p>
                         <p><strong>{{ security_question }}</strong></p>
                         <div class="form-group">
                              <input type="text" id="security_answer" name="security_answer" placeholder="Enter your answer here" required>
                         </div>
-                        <button type="submit">Verify Answer</button>
+                        <button type="submit" class="submit-btn">Verify Answer</button>
                     
-                    {# --- השלב הראשון: בקשת שם משתמש --- #}
+                    {# --- Step 1: Enter Username --- #}
                     {% else %}
+                        <p>Please enter your username to begin.</p>
                         <div class="form-group">
-                            <input type="text" id="username" name="username" placeholder="Enter username" required>
+                            <input type="text" id="username" name="username" placeholder="Username" required>
                         </div>
-                        <button type="submit">submit</button>
+                        <button type="submit" class="submit-btn">Submit</button>
                     {% endif %}
                 </form>
             </main>

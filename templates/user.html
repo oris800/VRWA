@@ -1,45 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>user</title>
+    <title>User Profile</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/user_style.css') }}">
 </head>
 <body>
+    <div class="page-wrapper">
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="message message-{{ category | default('error') }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}   
 
-    {% if message %}
-        <div class="message" style="color: {{ message.color }}; border: 1px solid {{ message.color }}; padding: 10px; margin: 10px; border-radius: 5px;">
-            {{ message.text }}
+        <div class="user-card">
+            <header class="card-header">
+                <h1>{{ user_name }}'s Profile</h1>
+            </header>
+            
+            <div class="card-content">
+                <p><strong>ID:</strong> {{ user_id }}</p>
+                <p><strong>Username:</strong> {{ user_name }}</p>
+                <p><strong>Security Question:</strong> {{ security_question }}</p>
+                <p><strong>Balance:</strong> ${{ user_cash }}</p> 
+            </div>
+            
+            <hr>
+
+            <details class="password-details">
+                <summary>Change Password</summary>
+                <form method="POST" class="change-password-form">
+                    <div class="form-group">
+                        <label for="current_password">Current Password:</label>
+                        <input type="password" id="current_password" name="current_password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_password">New Password:</label>
+                        <input type="password" id="new_password" name="new_password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm New Password:</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required>
+                    </div>
+
+                    <input type="hidden" name="uid" value="{{ user_name_encoded }}">
+
+                    <button type="submit" class="submit-btn">Update Password</button>
+                </form>
+            </details>
+
+            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
         </div>
-    {% endif %}
-
-    <div class="user-card">
-        <h1>{{ user_name }}</h1>
-        <hr>
-        <p><strong>ID:</strong> {{ user_id }}</p>
-        <p><strong>Username:</strong> {{ user_name }}</p>
-        <p><strong>your security question is: </strong> {{ security_question }}</p>
-        <p><strong>you have: {{ user_cash }}$  </p> 
-        <details closed> <summary><strong>Change Password</strong></summary>
-            <form method="POST" class="change-password-form">
-                <label for="current_password">Current Password:</label><br>
-                <input type="password" id="current_password" name="current_password" required><br>
-
-                <label for="new_password">New Password:</label><br>
-                <input type="password" id="new_password" name="new_password" required><br>
-
-                <label for="confirm_password">Confirm New Password:</label><br>
-                <input type="password" id="confirm_password" name="confirm_password" required><br>
-
-                <input type="hidden" name="uid" value="{{ user_name_encoded }}">
-
-                <button type="submit">Submit</button>
-            </form>
-        </details>
-
-        <a href="{{ url_for('logout') }}" class="logout-button">התנתק</a>
     </div>
-
 </body>
 </html>

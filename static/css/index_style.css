@@ -1,77 +1,155 @@
+/* הגדרות כלליות וצבעים */
+:root {
+    --crt-bg: #0a0a0a;
+    --crt-green: #00ff41;
+    --crt-dark-green: #008a23;
+    --glow-color: rgba(0, 255, 65, 0.5);
+}
+
 body {
-    font-family: 'Courier New', Courier, monospace;
-    background-color: #000000;
-    color: #00ff00;
-    text-align: center;
+    background-color: var(--crt-bg);
+    color: var(--crt-green);
+    font-family: 'VT323', monospace;
+    font-size: 18px;
     margin: 0;
     padding: 20px;
 }
+
+/* אפקט סריקה של מסך ישן */
+.scanlines-overlay::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.3) 1px,
+        transparent 1px
+    );
+    background-size: 100% 3px;
+    pointer-events: none; /* מאפשר ללחוץ דרך האלמנט */
+    z-index: 10;
+}
+
 .container {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
-    border: 2px solid #00ff00;
-    padding: 15px;
-    box-shadow: 0 0 15px #00ff00;
+    border: 2px solid var(--crt-dark-green);
+    padding: 20px;
+    box-shadow: 0 0 20px var(--glow-color);
 }
-header h1 {
+
+/* כותרת ראשית */
+.main-header {
+    text-align: center;
+    border-bottom: 2px solid var(--crt-dark-green);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.main-header h1 {
+    font-family: 'Press Start 2P', cursive;
     font-size: 2.5em;
-    text-shadow: 0 0 5px #00ff00;
-    margin: 10px 0;
+    margin: 0;
+    text-shadow: 0 0 10px var(--glow-color);
 }
-header p {
-    font-size: 1.1em;
-    color: #a0a0a0;
-    font-style: italic;
+
+.main-header .subtitle {
+    margin-top: 10px;
+    font-size: 1.2em;
+    animation: blink 1s step-end infinite;
 }
-nav {
-    border-top: 2px solid #00ff00;
-    border-bottom: 2px solid #00ff00;
-    padding: 10px 0;
-    margin: 20px 0;
+
+/* אנימציית סמן מהבהב */
+@keyframes blink {
+    50% { opacity: 0; }
 }
-nav a {
-    color: #00ff00;
+
+.user-greeting a {
+    color: var(--crt-green);
     text-decoration: none;
-    margin: 0 15px;
     font-weight: bold;
 }
-nav a:hover {
-    background-color: #00ff00;
-    color: #000000;
+.user-greeting a:hover {
+    text-decoration: underline;
+    text-shadow: 0 0 5px var(--glow-color);
 }
-main h2 {
-    font-size: 2em;
-}
-.product-showcase {
+
+/* תפריט ניווט */
+.main-nav {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
+    gap: 30px;
+    margin-bottom: 30px;
 }
+
+.main-nav a {
+    color: var(--crt-green);
+    text-decoration: none;
+    font-size: 1.3em;
+    transition: all 0.2s;
+}
+
+.main-nav a:hover {
+    color: white;
+    text-shadow: 0 0 8px white;
+}
+
+.section-title {
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.5em;
+    margin-bottom: 30px;
+}
+
+/* רשת המוצרים - CSS Grid מודרני ורספונסיבי */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+/* כרטיס מוצר */
 .product-card {
-    border: 2px solid #00ff00;
-    width: 250px;
-    padding: 10px;
-}
-.product-card img {
-    width: 100%;
-    height: 180px;
-    object-fit: contain;
-    /* אפקט של מסך מונוכרום ישן */
-    filter: grayscale(100%) brightness(1.5) contrast(1.2);
-}
-.product-card h3 {
-    margin: 10px 0 0;
-    font-size: 1.2em;
-}
-/* עיצוב לבלוק שאלת אבטחה */
-.security-question-box {
-    margin: 30px auto;
-    max-width: 600px;
+    background-color: #111;
+    border: 2px solid var(--crt-dark-green);
+    text-align: center;
     padding: 15px;
-    border: 1px dashed #00ff00;
-    text-align: right;
+    transition: all 0.3s ease;
 }
-.security-question-box h3 {
-    margin-bottom: 10px;
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px var(--glow-color);
+    border-color: var(--crt-green);
+}
+
+.product-card img {
+    max-width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background-color: #000;
+}
+
+.product-card h3 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1em;
+    margin: 15px 0 5px 0;
+}
+
+.product-card .product-year {
+    font-size: 0.9em;
+    color: #aaa;
+    margin: 0;
+}
+
+/* פוטר */
+.main-footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid var(--crt-dark-green);
+    font-size: 0.9em;
 }

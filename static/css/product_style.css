@@ -1,0 +1,133 @@
+/* General Body and Wrapper Styles */
+body, html {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #eef2f3; /* Light background from the theme */
+}
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Main Product Container - Teal Theme */
+.product-container {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1100px;
+    margin: 20px auto;
+    background-color: #008080; /* Dark Teal background */
+    color: #fff;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.product-image {
+    flex: 1 1 40%; /* Flex properties for responsive sizing */
+    min-width: 350px;
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+}
+
+.product-details {
+    flex: 1 1 60%; /* Flex properties for responsive sizing */
+    min-width: 350px;
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-title {
+    font-size: 2.8em;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.product-price {
+    font-size: 2em;
+    font-weight: bold;
+    color: #b2dfdb; /* Light teal for emphasis */
+    margin-bottom: 10px;
+}
+
+.product-release-date {
+    font-size: 1em;
+    color: #e0f2f1;
+    margin-bottom: 25px;
+    opacity: 0.9;
+}
+
+.product-description {
+    font-size: 1.1em;
+    line-height: 1.6;
+    flex-grow: 1; /* Pushes the button to the bottom */
+    margin-bottom: 25px;
+}
+
+/* Add to Cart Button */
+.add-to-cart-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background-color: #28a745; /* Green for primary action */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #218838;
+}
+
+/* Message Box for Info/Errors */
+.message {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: white;
+    width: 100%;
+    max-width: 1100px;
+    box-sizing: border-box;
+    text-align: center;
+}
+.message.message-error {
+    background-color: #e74c3c; /* Red for errors */
+}
+.message.message-success {
+    background-color: #28a745; /* Green for success */
+}
+.message.message-info {
+    background-color: #3498db; /* Blue for info */
+}
+
+/* Responsive layout for smaller screens */
+@media (max-width: 800px) {
+    .product-container {
+        flex-direction: column;
+    }
+    .product-details {
+        text-align: center;
+    }
+}

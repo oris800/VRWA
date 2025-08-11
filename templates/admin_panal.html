@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetroPwn - Login</title>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-box">
+            <header>
+                <h1>Login --- welcome boss</h1>
+                <h2>admin panal</h2>
+            </header>
+
+            <main>
+                {% if message %}
+                    <div class="message" style="color: {{ message.color }}; border-color: {{ message.color }};">{{ message.text }}</div>
+                {% endif %}
+
+                <form action="{{ url_for('login_page') }}" method="post">
+                    <div class="form-group">
+                        <input type="text" id="adminname" name="admin name" placeholder="admin name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" name="password" placeholder="password" required>
+                    </div>
+                    
+                    <button type="submit">Login</button>
+                </form>
+            </main>
+        </div>
+    </div>
+</body> 
+</html>

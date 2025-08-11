@@ -1,36 +1,41 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RetroPwn - Login</title>
+    <title>Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login_style.css') }}">
 </head>
 <body>
-    <div class="login-wrapper">
+    <div class="page-wrapper">
         <div class="login-box">
             <header>
-                <h1>Login --- welcome back</h1>
+                <h1>Welcome Back</h1>
+                <p>Login to your account</p>
             </header>
 
             <main>
-                {% if message %}
-                    <div class="message" style="color: {{ message.color }}; border-color: {{ message.color }};">{{ message.text }}</div>
-                {% endif %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="message message-{{ category | default('error') }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
 
                 <form action="{{ url_for('login_page') }}" method="post">
                     <div class="form-group">
-                        <input type="text" id="username" name="username" placeholder="user name" required>
+                        <input type="text" id="username" name="username" placeholder="Username" required>
                     </div>
                     <div class="form-group">
-                        <input type="password" id="password" name="password" placeholder="password" required>
+                        <input type="password" id="password" name="password" placeholder="Password" required>
                     </div>
                     
-                    <button type="submit">Login</button>
+                    <button type="submit" class="login-btn">Login</button>
                 </form>
                 
-                <div class="forgot-password">
-                    <a href="{{ url_for('reset') }}">Have you forgot your password?</a>
+                <div class="extra-links">
+                    <a href="{{ url_for('reset') }}">Forgot your password?</a>
                 </div>
             </main>
         </div>

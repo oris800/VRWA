@@ -3,111 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RetroPwn - Products</title>
-    <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-        h1 { 
-            text-align: center;
-            color: #2c3e50;
-        }
-        table { 
-            width: 90%; 
-            margin: 30px auto; 
-            border-collapse: collapse; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Added shadow for depth */
-            border-radius: 8px; /* Rounded corners for the table */
-            overflow: hidden; /* Ensures the corners are rounded */
-        }
-        th, td { 
-            padding: 16px; /* Increased padding for more space */
-            text-align: left;
-            vertical-align: middle;
-            border-bottom: 1px solid #ddd;
-        }
-        thead th { 
-            background-color: #34495e; /* Darker header background */
-            color: white;
-            font-weight: 600;
-        }
-        tbody tr:hover {
-            background-color: #f5f5f5; /* Hover effect for rows */
-        }
-        td img {
-            max-width: 180px; /* --- IMAGES ENLARGED --- */
-            height: auto;
-            display: block;
-            border-radius: 4px; /* Slightly rounded corners for images */
-        }
-        .action-button {
-            background-color: #3498db; /* A nicer blue */
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-        .action-button:hover {
-            background-color: #2980b9;
-        }
-        form {
-            margin: 0;
-        }
-        nav {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        nav a {
-            text-decoration: none;
-            color: #3498db;
-            font-weight: bold;
-            font-size: 16px;
-        }
-    </style>
+    <title>Our Products</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/products_style.css') }}">
 </head>
 <body>
+    <div class="page-wrapper">
+        <div class="content-container">
+            <header class="page-header">
+                <h1>Our Product Catalog</h1>
+                <h2>you have {{user_cash}}$</h2>
+                <p>Showing: <strong>{{ catagory }}</strong></p>
+                <a href="/cart">cart</a>
+            </header>
 
-    <header>
-        <h1>Our Product Catalog</h1>
-    </header>
+            <nav class="page-nav">
+                <div class="dropdown">
+                    <button class="dropbtn">Filter by Category</button>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('products_page', category='Computer') }}">Computers</a>
+                        <a href="{{ url_for('products_page', category='Game') }}">Games</a>
+                        <a href="{{ url_for('products_page', category='Software') }}">Software</a>
+                        <a href="{{ url_for('products_page', category='Peripheral') }}">Peripherals</a>
+                        <a href="{{ url_for('products_page', category='All') }}">Show All</a>
+                    </div>
+                </div>
+                <a href="/" class="home-link">Home</a>
+            </nav>
 
-    <nav>
-        <a href="/">Home</a>
-    </nav>
-
-    <main>
-        <table>
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Product Name</th>
-                    <th>Release Year</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
+            <main class="product-grid">
                 {% for item in products %}
-                <tr>
-                    <td><img src="{{ item.img }}" alt="{{ item.name }}"></td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.release_year }}</td>
-                    <td>${{ "%.2f"|format(item.price) }}</td>
-                    <td>
-                        <form method="POST" action="{{ url_for('product', id=item.id) }}">
-                            <button type="submit" class="action-button">Add to Cart</button>
-                        </form>
-                    </td>
-                </tr>
+                <div class="product-card">
+                    <div class="product-card-image">
+                        <img src="{{ item.img }}" alt="Image of {{ item.name }}">
+                    </div>
+                    <div class="product-card-content">
+                        <h3 class="product-name">{{ item.name }}</h3>
+                        <p class="product-details">Year: {{ item.release_year }}</p>
+                        <p class="product-price">${{ "%.2f"|format(item.price) }}</p>
+                        
+                        <a href="{{ url_for('product', id=item.id) }}" class="add-to-cart-btn">View Details</a>
+                    </div>
+                </div>
                 {% endfor %}
-            </tbody>
-        </table>
-    </main>
-
+            </main>
+        </div>
+    </div>
 </body>
 </html>

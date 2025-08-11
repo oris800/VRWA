@@ -1,91 +1,78 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
+    <title>עגלת קניות</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cart_style.css') }}">
-    <style>
-        /* Style for the large order button */
-        .order-now-btn {
-            display: block;
-            width: 100%;
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(45deg, #28a745, #218838);
-            border: none;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            text-decoration: none;
-            margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .order-now-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        /* Style for the message box */
-        .message {
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid transparent;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 16px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 
-    <div class="cart-container">
 
-        {% if message %}
-            <div class="message" style="color: {{ message.color }}; border-color: {{ message.color }}; background-color: {{ message.color }}20;">
-                {{ message.text }}
-            </div>
+    <header class="top-bar">
+        <i class="fas fa-shopping-cart top-icon"></i>
+        <span>$cart | {{user_name}} | cash: {{user_cash}}</span>
+    </header>
+
+    <div class="main-container">
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="message message-{{ category | default('error') }}">{{ message }}</div>
+            {% endfor %}
         {% endif %}
-        <div class="cart-header">
-            <h1>Shopping Cart | {{user_name}} | cash: {{user_cash}}$ </h1>
-            <img src="{{ url_for('static', filename='imgs/shopping-cart.png') }}" alt="Shopping Cart" class="cart-icon">
-        </div>
+        {% endwith %}   
+    
 
         {% if cart_items %}
-        <table class="cart-table">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart_items %}
-                <tr>
-                    <td class="product-cell">
-                        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="product-image">
-                        <span>{{ item.name }}</span>
-                    </td>
-                    <td>${{ "%.2f"|format(item.price) }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="cart-content">
+            {% for item in cart_items %}
+            <div class="item-card">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="product-image">
+                
+                <div class="item-details">
+                    <p>שם: {{ item.name }}</p>
+                    <p>מחיר: ${{ "%.2f"|format(item.price) }}</p>
+                </div>
 
-        <div class="cart-summary">
-            <div class="total-row grand-total">
-                <span>Total:</span>
-                <span id="grand-total">${{ "%.2f"|format(grand_total) }}</span>
+                <div class="quantity-controls">
+                    <form method="POST" style="display: inline;">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" name="productid_increase" value="{{ item.id }}" class="quantity-btn">+</button>
+                    </form>
+                    <span class="item-quantity">{{ item.quantity }}</span>
+                    <form method="POST" style="display: inline;">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" name="productid_dcrease" value="{{ item.id }}" class="quantity-btn">-</button>
+                    </form>
+                </div>
+
+                <div class="item-total">
+                    <p>סה"כ: ${{ "%.2f"|format(item.price * item.quantity) }}</p>
+                </div>
+                
+                <div class="item-remove">
+                    <form method="POST" style="display: inline;">
+                        <button type="submit" class="remove-btn" name="remove_item" value="{{ item.id }}"></button>
+                    </form>
+                </div>
             </div>
-            <a href="/checkout" class="order-now-btn">Order Now!</a>
+            {% endfor %}
         </div>
         
+        <footer class="cart-summary">
+             <a href="/cart/checkout" class="order-btn">המשך לתשלום</a>
+            <div class="summary-total">
+                סה"כ לתשלום: ${{ "%.2f"|format(grand_total) }}
+            </div>
+        </footer>
+
         {% else %}
-        <div class="empty-cart-message">
-            <p>Your shopping cart is empty.</p>
-            <a href="/">Back to Shop</a>
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart empty-cart-icon"></i>
+            <p>העגלה שלך ריקה</p>
         </div>
         {% endif %}
     </div>

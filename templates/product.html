@@ -1,140 +1,42 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product_name }}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-
-        .message {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 10px;
-            border: 2px solid;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .product-container {
-            display: flex;
-            flex-wrap: wrap;
-            max-width: 1000px;
-            margin: 40px auto;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .product-image {
-            flex: 1;
-            min-width: 300px;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .product-image img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 5px;
-        }
-
-        .product-details {
-            flex: 1;
-            min-width: 300px;
-            padding: 20px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-title {
-            font-size: 2.5em;
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #000;
-        }
-
-        .product-price {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #007BFF;
-            margin-bottom: 10px;
-        }
-
-        .product-release-date {
-            font-size: 1em;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .product-description {
-            font-size: 1.1em;
-            flex-grow: 1;
-            margin-bottom: 25px;
-        }
-
-        .add-to-cart-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            transition: background-color 0.3s ease;
-        }
-
-        .add-to-cart-btn:hover {
-            background-color: #218838;
-        }
-
-        @media (max-width: 768px) {
-            .product-container {
-                flex-direction: column;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/product_style.css') }}">
 </head>
 <body>
+    <div class="page-wrapper">
+        <a href="/cart">cart</a>
 
-    <!-- הודעת מערכת -->
-    {% if message %}
-        <div class="message" style="color: {{ message.color }}; border-color: {{ message.color }};">
-            {{ message.text }}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, text in messages %}
+                    <div class="message message-{{ category|default('info') }}">
+                        {{ text }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="product-container">
+            <div class="product-image">
+                <img src="{{ img }}" alt="Image of {{ product_name }}">
+            </div>
+
+            <div class="product-details">
+                <h1 class="product-title">{{ product_name }}</h1>
+                <p class="product-price">${{ product_price }}</p>
+                <p class="product-release-date">Release Date: {{ product_release_date }}</p>
+                <p class="product-description">{{ product_description or "No description is available for this product." }}</p>
+
+                <form method="POST">
+                    <button type="submit" name="add_to_cart" value="yes" class="add-to-cart-btn">Add to Cart</button>
+                </form>
+            </div>
         </div>
-    {% endif %}
-
-    <div class="product-container">
-        <div class="product-image">
-            <img src="{{ img }}" alt="תמונה של {{ product_name }}">
-        </div>
-
-        <div class="product-details">
-            <h1 class="product-title">{{ product_name }}</h1>
-            <p class="product-price">{{ product_price }}</p>
-            <p class="product-release-date">תאריך יציאה: {{ product_release_date }}</p>
-            <p class="product-description">{{ product_description }}</p>
-
-            <!-- כפתור הוספה לעגלה -->
-            <form method="POST" action="{{ url_for('product', id=request.args.get('id')) }}">
-                <button type="submit" class="add-to-cart-btn">הוסף לעגלה</button>
-            </form>
-        </div>
+        
     </div>
-
 </body>
 </html>

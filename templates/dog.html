@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבט על כלבים</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .dog-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .dog-button:hover {
+            background-color: #45a049;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Click to see image of a dog</h1>
+    <form method="POST">
+        <button type="submit" class="dog-button">כלב</button>
+        <input type="hidden" name="api" value="https://dog.ceo/api/breeds/image/random" />
+    </form>
+    {% if img_src %}
+        <img src="{{ img_src }}" alt="תמונה של כלב חמוד">
+    {% endif %}
+</body>
+</html>
