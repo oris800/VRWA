@@ -3,18 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Completed Successfully</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/cart_style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Payment Completed</title>
+    <!-- Link to the new CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout_style.css') }}">
 </head>
 <body>
 
     <header class="top-bar">
-        <i class="fas fa-shopping-cart top-icon"></i>
-        <span>Order Completed | {{ user_name }}</span>
+        <div class="user-info">
+            <!-- Replaced icon with local image -->
+            <img src="{{ url_for('static', filename='imgs/icons/shopping-cart.png') }}" alt="Cart" class="header-icon">
+            <span>Order Completed | {{ user_name }}</span>
+        </div>
+        <!-- Added a button to go back to the shop -->
+        <a href="{{ url_for('products_page') }}" class="back-to-shop-btn">
+            Back to Shop
+            <img src="{{ url_for('static', filename='imgs/icons/right-arrow.png') }}" alt="Back" class="button-icon">
+        </a>
     </header>
 
-    <div class="main-container">
+    <div class="checkout-container">
         
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -24,37 +32,37 @@
         {% endif %}
         {% endwith %}
     
-        <div class="checkout-content">
-            
-            <div class="order-completion">
-                <h2>Purchase Completed Successfully!</h2>
-                <p>Thank you for your purchase. Your order has been successfully placed.</p>
+        <div class="order-completion">
+            <div class="success-icon">&#10004;</div>
+            <h2>Purchase Completed Successfully!</h2>
+            <p>Thank you for your order. Your items will be processed shortly.</p>
+        </div>
+        
+        <div class="order-summary">
+            <h3>Order Details</h3>
+            <div class="details-grid">
+                <p><strong>Order ID:</strong></p><p>{{ order_id }}</p>
+                <p><strong>Total Amount:</strong></p><p>${{ "%.2f"|format(total) }}</p>
             </div>
             
-            <h3>Ordered Products:</h3>
+            <h4>Products Ordered:</h4>
             <div class="items-list">
                 {% for item in ordered_items %}
                 <div class="item-card">
                     <img src="{{ item.image_url }}" alt="{{ item.name }}" class="product-image">
                     <div class="item-details">
-                        <p>Name: {{ item.name }}</p>
-                        <p>Unit Price: ${{ "%.2f"|format(item.price) }}</p>
-                        <p>Quantity: {{ item.quantity }}</p>
+                        <p class="item-name">{{ item.name }}</p>
+                        <p class="item-meta">Unit Price: ${{ "%.2f"|format(item.price) }}</p>
+                    </div>
+                    <div class="item-quantity">
+                        <p>x {{ item.quantity }}</p>
                     </div>
                     <div class="item-total">
-                        <p>Total per Product: ${{ "%.2f"|format(item.price * item.quantity) }}</p>
+                        <p>${{ "%.2f"|format(item.price * item.quantity) }}</p>
                     </div>
                 </div>
                 {% endfor %}
             </div>
-            
-            <div class="order-details">
-                <h3>Order Details:</h3>
-                <p><strong>Name: </strong>{{ user_name }}</p>
-                <p><strong>Total Amount: </strong>${{ "%.2f"|format(total) }}</p>
-                <p><strong>Order ID: </strong>{{ order_id }}</p>
-            </div>
-            
         </div>
         
     </div>

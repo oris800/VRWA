@@ -1,35 +1,142 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RetroPwn - Login</title>
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-weight: bold;
+            font-size: 2.2em;
+            margin-bottom: 5px;
+            color: #1a1a1a;
+        }
+        p {
+            font-size: 1.3em;
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        section {
+            margin-bottom: 25px;
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-size: 1em;
+            font-weight: bold;
+        }
+        .form-group input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        
+        /* --- Flash Messages --- */
+        .flashes { list-style-type: none; padding: 0; margin-bottom: 20px; }
+        .flashes li { padding: 15px; border-radius: 5px; font-weight: bold; }
+        .flashes .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .flashes .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        /* --- Log Viewer Styles --- */
+        .log-viewer h2 {
+            font-size: 1.5em;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .log-viewer textarea {
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #e9ecef;
+            color: #495057;
+            font-family: 'Courier New', Courier, monospace;
+            resize: vertical;
+            margin-top: 10px;
+        }
+
+    </style>
 </head>
 <body>
-    <div class="login-wrapper">
-        <div class="login-box">
-            <header>
-                <h1>Login --- welcome boss</h1>
-                <h2>admin panal</h2>
-            </header>
+    <main>
+        <header>
+            <h1>Admin Panel: {{ admin_name }}</h1>
+            <p>Your favorite fruit is: {{ fruit }}</p>
+        </header>
 
-            <main>
-                {% if message %}
-                    <div class="message" style="color: {{ message.color }}; border-color: {{ message.color }};">{{ message.text }}</div>
-                {% endif %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class=flashes>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        
+        <hr>
 
-                <form action="{{ url_for('login_page') }}" method="post">
-                    <div class="form-group">
-                        <input type="text" id="adminname" name="admin name" placeholder="admin name" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id="password" name="password" placeholder="password" required>
-                    </div>
-                    
-                    <button type="submit">Login</button>
-                </form>
-            </main>
-        </div>
-    </div>
-</body> 
+        <section class="user-update">
+            <form method="POST" action="">
+                <div class="form-group">
+                    <label for="addUser">Update user to "internal":</label>
+                    <input type="text" id="addUser" name="addUser" placeholder="Enter name..." required>
+                    <button type="submit">Update</button>
+                </div>
+            </form>
+        </section>
+
+        <hr>
+
+        <section class="log-viewer">
+            <h2>Log File Viewer</h2>
+            <form method="POST" action="">
+
+                
+                <div class="form-group">
+                    <label for="fp">File Path:</label>
+                    <input type="text" id="fp" name="fp" value="log.txt" type="hidden" >
+                    <button type="submit">Show Log</button>
+                </div>
+            </form>
+            <textarea readonly>{{ log_content }}</textarea>
+        </section>
+    </main>
+</body>
 </html>

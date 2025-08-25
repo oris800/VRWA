@@ -1,21 +1,25 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>עגלת קניות</title>
+    <title>Shopping Cart</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cart_style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 
-
     <header class="top-bar">
-        <i class="fas fa-shopping-cart top-icon"></i>
-        <span>$cart | {{user_name}} | cash: {{user_cash}}</span>
+        <div class="user-info">
+            <span>{{user_name}} | Cash: ${{ "%.2f"|format(user_cash) }}</span>
+        </div>
+        <a href="{{ url_for('products_page') }}" class="back-to-shop-btn">
+            Back to Shop
+            <img src="{{ url_for('static', filename='imgs/icons/right-arrow.png') }}" alt="Back" class="button-icon">
+        </a>
     </header>
 
-    <div class="main-container">
+    <div class="cart-container">
+        <h1>Your Shopping Cart</h1>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -25,37 +29,44 @@
         {% endif %}
         {% endwith %}   
     
-
         {% if cart_items %}
         <div class="cart-content">
+            <div class="cart-header">
+                <div class="header-product">Product</div>
+                <div class="header-quantity">Quantity</div>
+                <div class="header-total">Total</div>
+                <div class="header-remove"></div>
+            </div>
+
             {% for item in cart_items %}
             <div class="item-card">
-                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="product-image">
-                
-                <div class="item-details">
-                    <p>שם: {{ item.name }}</p>
-                    <p>מחיר: ${{ "%.2f"|format(item.price) }}</p>
+                <div class="item-product">
+                    <img src="{{ item.image_url }}" alt="{{ item.name }}" class="product-image">
+                    <div class="item-details">
+                        <p class="item-name">{{ item.name }}</p>
+                        <p class="item-price">Price: ${{ "%.2f"|format(item.price) }}</p>
+                    </div>
                 </div>
 
-                <div class="quantity-controls">
-                    <form method="POST" style="display: inline;">
-                        <input type="hidden" name="quantity" value="1">
-                        <button type="submit" name="productid_increase" value="{{ item.id }}" class="quantity-btn">+</button>
-                    </form>
-                    <span class="item-quantity">{{ item.quantity }}</span>
+                <div class="item-quantity-controls">
                     <form method="POST" style="display: inline;">
                         <input type="hidden" name="quantity" value="1">
                         <button type="submit" name="productid_dcrease" value="{{ item.id }}" class="quantity-btn">-</button>
                     </form>
+                    <span class="item-quantity">{{ item.quantity }}</span>
+                    <form method="POST" style="display: inline;">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" name="productid_increase" value="{{ item.id }}" class="quantity-btn">+</button>
+                    </form>
                 </div>
 
                 <div class="item-total">
-                    <p>סה"כ: ${{ "%.2f"|format(item.price * item.quantity) }}</p>
+                    <p>${{ "%.2f"|format(item.price * item.quantity) }}</p>
                 </div>
                 
                 <div class="item-remove">
                     <form method="POST" style="display: inline;">
-                        <button type="submit" class="remove-btn" name="remove_item" value="{{ item.id }}"></button>
+                        <button type="submit" class="remove-btn" name="remove_item" value="{{ item.id }}" title="Remove item"></button>
                     </form>
                 </div>
             </div>
@@ -63,16 +74,19 @@
         </div>
         
         <footer class="cart-summary">
-             <a href="/cart/checkout" class="order-btn">המשך לתשלום</a>
-            <div class="summary-total">
-                סה"כ לתשלום: ${{ "%.2f"|format(grand_total) }}
+            <div class="summary-details">
+                <span class="summary-label">Grand Total:</span>
+                <span class="summary-total">${{ "%.2f"|format(grand_total) }}</span>
             </div>
+            <a href="{{ url_for('chackout') }}" class="order-btn">Proceed to Checkout</a>
         </footer>
 
         {% else %}
         <div class="empty-cart">
-            <i class="fas fa-shopping-cart empty-cart-icon"></i>
-            <p>העגלה שלך ריקה</p>
+            <img src="{{ url_for('static', filename='imgs/icons/shopping-cart.png') }}" alt="Empty Cart" class="empty-cart-icon">
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added anything to your cart yet.</p>
+            <a href="{{ url_for('products_page') }}" class="back-to-shop-btn large">Start Shopping</a>
         </div>
         {% endif %}
     </div>

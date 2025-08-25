@@ -1,9 +1,10 @@
-from flask import Flask, render_template,request, redirect, url_for, session,  flash
+from flask import Flask, render_template,request, redirect, url_for, session,  flash,request, jsonify
 import requests
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import requests
 from Crypto.Hash import MD5,MD2
+import os
 
 
 
@@ -38,13 +39,13 @@ def caesar_cipher(text, shift):
 
 @app.route('/')
 def home():
-
+    products = db.session.execute(text("SELECT * FROM products WHERE show_on_page = 1")).fetchall()    
     if "username" in session:
-        products = db.session.execute(text("SELECT * FROM products WHERE show_on_page = 1")).fetchall()    
-        return render_template('index.html', username=session["username"], products=products)
-    
-    return render_template('index.html')
 
+        #INJCTION
+        return render_template('index.html', username=session["username"], products=products)
+    else:
+        return render_template('index.html', products=products)
 
 
 @app.route('/login',methods=['GET', 'POST'])
@@ -55,6 +56,7 @@ def login_page():
         hashed_input_password = MD5.new(password.encode()).hexdigest()
          # במסד נתונים לא לשכוח להצפין את הסיססמה!!!!
         query_string = f"SELECT * FROM users WHERE username = '{username}' AND password = '{hashed_input_password}'"
+        #INJCTION
         query = text(query_string)
         result = db.session.execute(query).fetchone()
 
@@ -64,7 +66,7 @@ def login_page():
             return redirect(url_for('user_page'))
         else:
             flash("Invalid username or password")
-            return redirect(url_for('login_page'))
+            return redirect(url_for('login'))
     return render_template('login.html')
 
 
@@ -80,6 +82,7 @@ def reset():
             # במסד נתונים לא לשכוח להצפין את הסיססמה!!!!
             if new_password == confirm_password:
                 db_query = f"UPDATE users SET password = '{MD5.new(new_password.encode()).hexdigest()}' WHERE username = '{username}'"
+                #INJCTION
                 db.session.execute(text(db_query))
                 db.session.commit()
                 session.pop('can_reset_password', None)
@@ -98,7 +101,9 @@ def reset():
             submitted_answer = request.form.get('security_answer')            
             print(submitted_answer)   
             db_quary = f"SELECT security_answer FROM users WHERE username = '{username}'"
+            #INJCTION
             result2 = db.session.execute(text(db_quary)).fetchone()
+            
             if submitted_answer == result2[0]:
                 
                 session['can_reset_password'] = True
@@ -107,6 +112,7 @@ def reset():
                 "text": "Security answer is currect.",
                 "color": "green"
                 }
+                write_log(message="user:" + username + " reset password")
                 return render_template('reset.html',message=message,allow_password_reset=True,username=username)
             else:  
                 message = {
@@ -114,6 +120,7 @@ def reset():
                 "color": "red"
                 }
                 db_quary = f"SELECT security_question FROM users WHERE username = '{username}'"
+                #INJCTION
                 result = db.session.execute(text(db_quary)).fetchone()
                 return render_template('reset.html',username=username ,security_question=result[0],message=message)
 
@@ -144,7 +151,7 @@ def user_page():
     if "username" in session:
         username = session["username"]  
         user_info = db.session.execute(text(f"SELECT * FROM users WHERE username = '{session['username']}'")).fetchone()
-        
+        #INJCTION
         if request.method == 'POST':
                 current_password = request.form.get('current_password')
                 new_password = request.form.get("new_password")
@@ -159,32 +166,24 @@ def user_page():
                     return "Error uid missing "
     
                 db_password_quray =f"SELECT password FROM users WHERE username = '{username}'"
+                #INJCTION
                 db_password =  db.session.execute(text(db_password_quray)).fetchone()
                 if MD5.new(current_password .encode()).hexdigest() == db_password[0]:
                     if new_password == confirm_password:
                         db_query = f"UPDATE users SET password = '{MD5.new(new_password .encode()).hexdigest()}' WHERE username = '{current_user}'"
                         db.session.execute(text(db_query))
                         db.session.commit()
-                        message = {
-                            "text": "Password reset successfully",
-                            "color": "green"
-                        }
+                        write_log("user: " + username + " reset password")
+
                         flash("Password reset successfully","info")
                         return redirect(url_for('user_page'))
                         #return render_template('user.html',user_name=user_info[1],user_id=user_info[0],security_question=user_info[3],user_cash=user_info[5], user_name_encoded=caesar_cipher(username,5),message=message)
                     else:
-                        message = {
-                            "text": "Passwords do not match",
-                            "color": "red"
-                        }
-                    flash("Passwords do not match","error")
-                    return redirect(url_for('user_page'))
+
+                        flash("Passwords do not match","error")
+                        return redirect(url_for('user_page'))
                     #return render_template('user.html',user_name=user_info[1],user_id=user_info[0],security_question=user_info[3],user_cash=user_info[5], user_name_encoded=caesar_cipher(username,5),message=message)
                 else:
-                        message = {
-                            "text": "current password not match",
-                            "color": "red"
-                        }
                         flash("current password not match","error")
                         return redirect(url_for('user_page'))
                         #return render_template('user.html',user_name=user_info[1],user_id=user_info[0],security_question=user_info[3],user_cash=user_info[5], user_name_encoded=caesar_cipher(username,5),message=message)
@@ -206,66 +205,129 @@ def logout():
 
 @app.route('/products',methods=['GET', 'POST'])
 def products_page():
+    user_info = None
     category_options = ["Computer","Game","Software","Peripheral","All"]
     catagory = request.args.get('category')
-    user_info = db.session.execute(text(f"SELECT * FROM users WHERE username = '{session['username']}'")).fetchone()
-    if catagory not in category_options or catagory == category_options[4]:
-        items = db.session.execute(text("SELECT * FROM products")).fetchall()
-        return render_template('products.html', products=items,catagory=category_options[4],user_cash=user_info[5])
-    if catagory ==  category_options[0]:
-        items = db.session.execute(text(f"SELECT * FROM products WHERE category = '{category_options[0]}'")).fetchall()
-        return render_template('products.html', products=items,catagory=category_options[0],user_cash=user_info[5])
-    if catagory == category_options[1]:
-        items = db.session.execute(text(f"SELECT * FROM products WHERE category = '{category_options[1]}'")).fetchall()
-        return render_template('products.html', products=items,catagory=category_options[1],user_cash=user_info[5])
-    if catagory ==  category_options[2]:
-        items = db.session.execute(text(f"SELECT * FROM products WHERE category = '{category_options[2]}'")).fetchall()
-        return render_template('products.html', products=items,catagory=category_options[2],user_cash=user_info[5])
-    if catagory == category_options[3]:
-        items = db.session.execute(text(f"SELECT * FROM products WHERE category = '{category_options[3]}'")).fetchall()
-        return render_template('products.html', products=items,catagory=category_options[3],user_cash=user_info[5])
-
+    #הספגטי הכי מסריח שיש בעולם סעמק
+    if "username"  in session:
+        user_info = db.session.execute(text(f"SELECT * FROM users WHERE username = '{session['username']}'")).fetchone()
+        #INJCTION
+        if catagory not in category_options or catagory == category_options[4]:
+            #INJCTION
+            items = db.session.execute(text("SELECT * FROM products where hidden = 0")).fetchall()
+            return render_template('products.html', products=items,catagory=category_options[4],user_cash="You have: " + str(user_info[5])+ "$")
+        else:
+            #INJCTION
+            items = db.session.execute(text(f"SELECT * FROM products WHERE category = '{catagory}' AND hidden = 0")).fetchall()
+            return render_template('products.html', products=items,catagory=catagory,user_cash="You have: " + str(user_info[5])+ "$")
+    else:
+        if catagory not in category_options or catagory == category_options[4]:
+            #INJCTION
+            items = db.session.execute(text("SELECT * FROM products where hidden = 0")).fetchall()
+            return render_template('products.html', products=items,catagory=category_options[4])
+        else:
+            #INJCTION
+            items = db.session.execute(text(f"SELECT * FROM products WHERE category = '{catagory}' AND hidden = 0")).fetchall()
+            return render_template('products.html', products=items,catagory=catagory)
 #מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד מוצר יחיד 
+
+
+
 
 @app.route('/product',methods=['GET', 'POST'])
 def product():
-        id = request.args.get('id')
-        if id:
-            product= db.session.execute(text(f"SELECT * FROM products WHERE id = '{id}'")).fetchone()
-            prodact_info = {
-                "id": product[0]
-                ,"name":product[1]
-                ,"price":product[3]
-                ,"release_date": product[2]
-                ,"image_url": product[4]
+    id = request.args.get('id')
+    if id:
+        comments = db.session.execute(text(f"SELECT * FROM comments WHERE product_id = '{id}'")).fetchall()
+     
+        comments_list = []
+        for comment in comments:
+            comment_id = comment[0]
+            user_id = comment[2]
+            comment_text = comment[3]
+
+            username_result = db.session.execute(text(f"SELECT username FROM users where id = '{user_id}'")).fetchone()
+            if username_result:
+                username = username_result[0]
+
+            comments_list.append([comment_id, comment_text, username])     
+
+        product = db.session.execute(text(f"SELECT * FROM products WHERE id = '{id}'")).fetchone()
+
+        if product and product[8] == 0:
+            product_info = {
+                "id": product[0],
+                "name":product[1],
+                "price":product[3],
+                "release_date": product[2],
+                "image_url": product[4],
+                "description": product[5]
             }
-            
-            if request.method == "POST" and request.form.get("add_to_cart"):
+        
+            if request.method == "POST" and "comment_text" in request.form:
+                if 'username' not in session:
+                    return "you are not authorized user, please <a href='/login'>login</a>", 401
+                
+                user_info = db.session.execute(text(f"SELECT * FROM users WHERE username = '{session['username']}'")).fetchone()
+                userid = user_info[0]
+
+                comment_text = request.form.get("comment_text")
+                insert_query = f"INSERT INTO comments (user_id, product_id, comment_text) VALUES ({userid}, {id}, '{comment_text}')"
+                db.session.execute(text(insert_query))
+                db.session.commit()
+                write_log("user: " + session['username'] + " post comment")
+                return redirect(f"/product?id={product_info['id']}")
+
+            if request.method == "POST" and 'delete_comment_id' in request.form:
+                if 'username' not in session:
+                    return "Not authorized", 401
+
+                comment_id_to_delete = request.form.get('delete_comment_id')
+                logged_in_user = db.session.execute(text(f"SELECT id FROM users WHERE username = '{session['username']}'")).fetchone()
+                logged_in_user_id = logged_in_user[0]
+                comment_author = db.session.execute(text(f"SELECT user_id FROM comments WHERE id = {comment_id_to_delete}")).fetchone()
+                
+                if comment_author and logged_in_user_id == comment_author[0]:
+                    db.session.execute(text(f"DELETE FROM comments WHERE id = {comment_id_to_delete}"))
+                    db.session.commit()
+                    write_log("user: " + session['username'] + " delete comment")
+                else:
+                    return "You do not have permission to delete this comment.", 403
+                
+                return redirect(f'/product?id={id}')
+
+            if request.method == "POST":
                 if "username" in session: 
-                        user_info = db.session.execute(text(f"SELECT * FROM users WHERE username = '{session['username']}'")).fetchone()
-                        userid = user_info[0]
-                        print(userid)
-                        if db.session.execute(text(f"SELECT * FROM cart_items WHERE user_id = {userid} and product_id = {prodact_info['id']}")).fetchone() == None:
-                            print(userid)
-                            db.session.execute(text(f"INSERT INTO cart_items (user_id , product_id) VALUES({userid},{prodact_info['id']}) "))
+                    user_info = db.session.execute(text(f"SELECT * FROM users WHERE username = '{session['username']}'")).fetchone()
+                    userid = user_info[0]
+                    url = request.form.get("stockapi")
+                
+                    response = requests.get(url)
+                    raw_html = response.text
+                
+                    return raw_html
+        
+                    if "item is in stock" in response.text:
+                        if db.session.execute(text(f"SELECT * FROM cart_items WHERE user_id = {userid} and product_id = {product_info['id']}")).fetchone() == None:
+
+                            db.session.execute(text(f"INSERT INTO cart_items (user_id , product_id) VALUES({userid},{product_info['id']}) "))
                             db.session.commit()
-                            print(f"add item: {prodact_info['name']}")
-                            return  redirect(f"/product?id={prodact_info['id']}")
+                            print(f"add item: {product_info['name']}")
+                            return  redirect(f"/product?id={product_info['id']}")
                         else:
                             print("you cant buy item twise")
-                            return  redirect(f"/product?id={prodact_info['id']}")
-                else:
+                            return  redirect(f"/product?id={product_info['id']}")
+                    elif "item is out of stock" in response.text:
+                        return render_template('product.html', product=product_info, comments=comments_list, in_stock=False)
+           
+                else:   
                     return "you are not authorized user, please <a href='/login'>login</a>", 401
+        
+        session_username = session.get('username', None)
+        return render_template('product.html', product=product_info, comments=comments_list, in_stock=True, session_username=session_username)
 
-            
-            return render_template('product.html', product_name=prodact_info["name"],
-                                   product_price=prodact_info["price"],
-                                   img=prodact_info["image_url"],product_release_date= prodact_info["release_date"])
-
-        else:
-            return "id not init"
-
-
+    else:
+        return "id not provided"
 
 @app.route('/cart', methods=['POST', "GET"])
 def cart():
@@ -277,8 +339,11 @@ def cart():
         items_for_template = []
         total_price = 0
         for item in cart_items_records:
+            #INJCTION
             P = db.session.execute(text(f"SELECT * FROM products WHERE id = '{ item[2]}'")).fetchone()
+            #INJCTION
             product_details = db.session.execute(text(f"SELECT * FROM products WHERE id = '{ item[2]}'")).fetchone()
+            #INJCTION
             quntity = db.session.execute(text(f"SELECT * from cart_items WHERE user_id = {userid} AND product_id =  {item[2]}")).fetchone()
             product_data = {
                 "id": product_details[0],
@@ -294,10 +359,12 @@ def cart():
             item_id_to_remove = request.form.get("remove_item")
             print(f"remove item: {item_id_to_remove}")
             db.session.execute(
+                #INJCTION
                 text(f"DELETE FROM cart_items WHERE user_id = '{userid}' AND product_id = '{item_id_to_remove}'")
             )
             db.session.commit()
             item = db.session.execute(
+                #INJCTION
                 text(f"SELECT * FROM products WHERE id = '{item_id_to_remove}'")
             ).fetchone()
             db.session.commit()
@@ -305,18 +372,22 @@ def cart():
         
         if request.method == "POST" and "productid_increase" in request.form:
             db.session.execute(
+                #INJCTION
                 text(f"UPDATE cart_items SET quantity = quantity + {request.form.get("quantity")} WHERE user_id = {userid} AND product_id = {request.form['productid_increase']}")
             )
             db.session.commit()
             return  redirect(f"/cart")
         if request.method == "POST" and "productid_dcrease" in request.form:
             db.session.execute(
+                #INJCTION
                 text(f"UPDATE cart_items SET quantity = quantity - {request.form.get("quantity")} WHERE user_id = {userid} AND product_id = {request.form['productid_dcrease']}")
             )
             if db.session.execute(
+                #INJCTION
                 text(f"SELECT quantity FROM cart_items WHERE user_id = {userid} AND product_id = {request.form['productid_dcrease']}")
             ).fetchone()[0] == 0:
                 db.session.execute(
+                    #INJCTION
                     text(f"DELETE FROM cart_items WHERE user_id = {userid} AND product_id = {request.form['productid_dcrease']}")
                 )
             db.session.commit()
@@ -343,113 +414,148 @@ def cart():
     else:
         return "you are not authorized user, please <a href='/login'>login</a>", 401
     
-@app.route('/cart/checkout', methods=['POST',"GET"])
+@app.route('/cart/checkout', methods=['POST', 'GET'])
 def chackout():
     if "username" in session:
-        Sorder_id = False
         user_info = db.session.execute(text(f"SELECT * FROM users WHERE username = '{session['username']}'")).fetchone()
         userid = user_info[0]
         user_cash = user_info[5]
+        
         cart_items_records = db.session.execute(text(f"SELECT * FROM cart_items WHERE user_id = '{userid}'")).fetchall()
+        
+        if not cart_items_records:
+            return redirect(url_for('cart'))
+        
         total_price = 0
+        Sorder_id = 0
+        products_data_in_cart = []
+
         for item in cart_items_records:
-            P = db.session.execute(text(f"SELECT * FROM products WHERE id = '{ item[2]}'")).fetchone()
-            if P[0] == 2:
-                Sorder_id = True
-            total_price += P[3] * item[3]
-            print("P:",P)
-            print("S:",Sorder_id)
+            P = db.session.execute(text(f"SELECT * FROM products WHERE id = '{item[2]}'")).fetchone()
+            if P:
+                products_data_in_cart.append({'details': P, 'quantity': item[3]})
+                
+                if P[0] == 99:
+                    Sorder_id = 99
+                elif P[0] == 2 and Sorder_id != 99:
+                    Sorder_id = 2
+                
+                total_price += P[3] * item[3]
+
         if total_price > user_cash:
-            flash("you dont have enough monnay","info")
-            print("you dont have enough monnay")
-            return redirect(url_for('cart')) 
-        elif total_price < 0:
-            flash("total cant be 0","info")
-            return redirect(url_for('cart')) 
+            flash("you dont have enough monnay", "info")
+            return redirect(url_for('cart'))
+        elif total_price <= 0:
+            flash("total cant be 0 or less", "info")
+            return redirect(url_for('cart'))
 
-        else:
-            items_for_template = []
-            order_id = ""
-            if Sorder_id == False:
-                for item in cart_items_records:
-                    order_id += "i=" + str(item[2]) + ","
-            
-                order_id = MD5.new(order_id .encode()).hexdigest()
-                print(order_id,"your order id: ")
-            else:
-                order_id = "amiga500"
-                order_id = MD5.new(order_id .encode()).hexdigest()
-                print(order_id,"your order id: ")
-
-            
-            user_cash = user_cash - total_price
-            db.session.execute(text(f"UPDATE users SET money = {user_cash} WHERE id = {userid}"))
-            db.session.commit()
-           
-            items_for_template = []
+        order_id = ""
+        if Sorder_id != 2 and Sorder_id != 99:
+            string_to_hash = ""
             for item in cart_items_records:
-                P = db.session.execute(text(f"SELECT * FROM products WHERE id = '{ item[2]}'")).fetchone()
-                product_details = db.session.execute(text(f"SELECT * FROM products WHERE id = '{ item[2]}'")).fetchone()
-                quntity = db.session.execute(text(f"SELECT * from cart_items WHERE user_id = {userid} AND product_id =  {item[2]}")).fetchone()
-                product_data = {
-                    "id": product_details[0],
-                    "name": product_details[1],
-                    "price": product_details[3],
-                    "image_url": product_details[4],
-                    "quantity": quntity[3]
-                }
-                items_for_template.append(product_data)
-            db.session.execute(text(f"DELETE FROM cart_items WHERE user_id = '{userid}'"))
-            db.session.commit()
+                string_to_hash += str(item[2])
+            order_id = MD5.new(string_to_hash.encode()).hexdigest()
+        elif Sorder_id == 2:
+            order_id = "amiga500"
+            order_id = MD5.new(order_id.encode()).hexdigest()
+        elif Sorder_id == 99:
+            order_id = "qun_computer"
+            order_id = MD5.new(order_id.encode()).hexdigest()
+        
+        user_cash = user_cash - total_price
+        db.session.execute(text(f"UPDATE users SET money = {user_cash} WHERE id = {userid}"))
+        db.session.execute(text(f"DELETE FROM cart_items WHERE user_id = '{userid}'"))
+        db.session.commit()
 
-            return render_template("checkout.html",
-                                   total=total_price,
-                                   user_name=user_info[1],
-                                   user_cash=user_info[5],order_id=order_id,ordered_items=items_for_template)
+        items_for_template = []
+        for saved_item in products_data_in_cart:
+            product_details = saved_item['details']
+            product_data = {
+                "id": product_details[0],
+                "name": product_details[1],
+                "price": product_details[3],
+                "image_url": product_details[4],
+                "quantity": saved_item['quantity']
+            }
+            items_for_template.append(product_data)
+        write_log("user: "+ session['username'] + " checkout")
+        return render_template("checkout.html",
+                               total=total_price,
+                               user_name=user_info[1],
+                               user_cash=user_info[5], 
+                               order_id=order_id, 
+                               ordered_items=items_for_template)
     else:
         return "you are not authorized user, please <a href='/login'>login</a>", 401
 
 
-@app.route('/dogs', methods=['POST', 'GET'])
-def dogs():
-    img_url = None
-
-    if request.method == "POST":
-        # קבלת ה-URL מהטופס שהמשתמש שלח (hidden input בשם 'api')
-        api_url = request.form.get("api")
-
-        # שולחים בקשת GET ל-API לקבלת תמונה של כלב אקראי
-        try:
-            response = requests.get(api_url) # כאן לוקחים קלט של משתמש בתור לינק
-        except:
-            return "Faild to reach API"
-
-        if response.ok and "message" in response.json():
-             #כאן בודקים אם זה הapi על ידי בדיקה אם התגובה מכילה את המילה הודעה
-            json = response.json()# אם זה כן ממרים את זה לjson
-            img_url = json["message"] # מפצלים את הjson ומשגים את הurl של התמונה 
-            return render_template("dog.html", img_src=img_url) #מרנדרים את הדף עם הurl של התמונה
-        else:
-            return response.text, response.status_code
-
-    return render_template("dog.html")
-
-@app.route('/admin', methods=['POST', 'GET'])
+@app.route('/admin_login', methods=['POST', 'GET'])
 def admin():
     if request.method == "POST":
-        username = request.form.get('username')
+        username = request.form.get('adminname')
         password = request.form.get('password')   
         hashed_input_password = MD5.new(password.encode()).hexdigest()
-        
-        query_string = f"SELECT * FROM admins WHERE username = '{username}' AND password = '{hashed_input_password}"
+            
+        #INJCTION
+        query_string = f"SELECT * FROM admins WHERE name = '{username}' AND password = '{hashed_input_password}'"
         result = db.session.execute(text(query_string)).fetchone()
         if result:
-            session['username'] = username
-            return "YOU ARE ADMIN"
-    return render_template('admin_panal.html')
+            session['admin_name'] = username 
+            #flash("Admin login successful!", "success")
+            return redirect(url_for('admin_panal'))
+        else:
+            #flash("Invalid admin credentials.", "error")
+            return redirect(url_for('admin')) 
+    return render_template('admin_login.html')
+
+@app.route('/admin_panal', methods=['POST', 'GET'])
+def admin_panal():
+    if 'admin_name' not in session:
+       return redirect(url_for('login'))
+
+    admin_username = session['admin_name']
+    admin_info_query = text("SELECT * FROM admins WHERE name = :name")
+    admin_info = db.session.execute(admin_info_query, {"name": admin_username}).fetchone()
+
+    file_path = '/var/logs/'
+    file_name = 'log.txt'
+    log_content = "log"
+    if request.method == "POST":
+        file_name = request.form.get('fp')
+        if 'fp' in request.form:
+            try:
+                with open(file_path + file_name, 'r') as file:
+                    log_content = file.read()
+                    return render_template('admin_panal.html', 
+                           admin_name=admin_info[1], 
+                           log_content=log_content)
+                        
+            except Exception as e:
+                log_content = "Error"
+                flash(f"ERORR", 'error')
 
 
+        if 'addUser' in request.form:
+            username = request.form.get('addUser')
+            if username:
+                user_exists_query = text("SELECT * FROM users WHERE username = :username")
+                user_exists = db.session.execute(user_exists_query, {"username": username}).fetchone()
 
+                if user_exists:
+                    update_query = text("UPDATE users SET internal = TRUE WHERE username = :username")
+                    db.session.execute(update_query, {"username": username})
+                    db.session.commit()
+                    flash(f"User '{username}' has been updated to internal.", 'success')
+                else:
+                    flash(f"User '{username}' was not found.", 'error')
+
+    return render_template('admin_panal.html', 
+                           admin_name=admin_info[1], 
+                           log_content=log_content)
+def write_log(message):
+    with open('log.txt', 'a') as log_file:
+        log_file.write("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"+ '\n')
+        log_file.write(message + '\n')
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000,host="0.0.0.0")

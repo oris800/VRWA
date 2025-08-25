@@ -29,9 +29,17 @@ body, html {
 }
 
 .card-header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     margin-bottom: 20px;
     font-size: 1.8em;
+}
+
+.header-icon {
+    height: 1.2em; /* Match icon size to font size */
+    margin-right: 15px;
 }
 
 .card-content p {
@@ -90,7 +98,44 @@ hr {
     color: #333;
 }
 
-/* Buttons */
+/* --- Buttons Section --- */
+
+.button-icon {
+    height: 18px;
+    margin-right: 8px;
+}
+
+/* Navigation Buttons Container */
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; /* Space between buttons */
+    margin-bottom: 20px; /* Space before logout button */
+}
+
+/* Individual Navigation Button */
+.nav-button {
+    flex-grow: 1; /* Allows buttons to share space equally */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background-color: #3498db; /* Blue for navigation */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    border: none;
+    font-size: 1em;
+}
+
+.nav-button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+/* Update Password Button */
 .submit-btn {
     width: 100%;
     padding: 12px;
@@ -104,16 +149,20 @@ hr {
     font-weight: bold;
     transition: background-color 0.3s ease;
 }
+
 .submit-btn:hover {
     background-color: #218838;
 }
 
+/* Logout Button */
 .logout-button {
-    display: block;
-    width: 90%;
-    max-width: 200px;
-    margin: 30px auto 10px auto;
+    display: flex; /* Changed from block to flex */
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* Changed to full width */
+    margin: 0 auto;
     padding: 12px;
+    box-sizing: border-box;
     background-color: #e74c3c; /* Red for destructive action */
     color: white;
     text-align: center;
@@ -122,6 +171,7 @@ hr {
     font-weight: bold;
     transition: background-color 0.3s ease;
 }
+
 .logout-button:hover {
     background-color: #c0392b;
 }

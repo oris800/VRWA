@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product_name }}</title>
+    <title>{{ product.name }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/product_style.css') }}">
 </head>
 <body>
     <div class="page-wrapper">
-        <a href="/cart">cart</a>
+        <a href="/cart">Shopping Cart</a>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -22,21 +22,62 @@
 
         <div class="product-container">
             <div class="product-image">
-                <img src="{{ img }}" alt="Image of {{ product_name }}">
+                <img src="{{ product.image_url }}" alt="Image of {{ product.name }}">
             </div>
 
             <div class="product-details">
-                <h1 class="product-title">{{ product_name }}</h1>
-                <p class="product-price">${{ product_price }}</p>
-                <p class="product-release-date">Release Date: {{ product_release_date }}</p>
-                <p class="product-description">{{ product_description or "No description is available for this product." }}</p>
-
-                <form method="POST">
-                    <button type="submit" name="add_to_cart" value="yes" class="add-to-cart-btn">Add to Cart</button>
+                <h1 class="product-title">{{ product.name }}</h1>
+                <p class="product-price">${{ product.price }}</p>
+                <p class="product-release-date">Release Date: {{ product.release_date }}</p>
+                <p class="product-description">{{ product.description or "No description is available for this product." }}</p>
+    
+                <form method="POST" action="{{ url_for('product', id=product.id) }}">
+                    <input type="hidden" name="stockapi" value="http://127.0.0.1:28001/chackstock?item_id={{ product.id }}">
+                    {% if in_stock %}
+                        <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                    {% else %}
+                        <button type="button" class="add-to-cart-btn out-of-stock-btn" disabled>Out of Stock</button>
+                    {% endif %}
                 </form>
             </div>
         </div>
         
+        <hr>
+
+        <div class="comments-section">
+            <h2>Comments</h2>
+
+            <div class="comments-list">
+                {% if comments %}
+                    {% for comment in comments %}
+                        <div class="comment">
+                            <p class="comment-author"><strong>user:  {{ comment[2] }}</strong></p>
+                        
+                            <pre>comment: <code>{{ comment[1] }}</code></pre>
+
+                            <div style="display: none;">{{ comment[1] | safe }}</div>
+                            
+                            {% if comment[2] == session_username %}
+                                <form method="POST" action="{{ url_for('product', id=product.id) }}" style="display: inline-block;">
+                                    <input type="hidden" name="delete_comment_id" value="{{ comment[0] }}">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No comments yet. Be the first to comment!</p>
+                {% endif %}
+            </div>
+
+            <div class="add-comment-form">
+                <h3>Add a Comment</h3>
+                <form method="POST" action="{{ url_for('product', id=product.id) }}">
+                    <textarea name="comment_text" placeholder="Write your comment here..." rows="4" required></textarea>
+                    <button type="submit" class="post-comment-btn">Post Comment</button>
+                </form>
+            </div>
+        </div>
     </div>
 </body>
 </html>

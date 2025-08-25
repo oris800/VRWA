@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
+    <!-- The link to the CSS file remains the same -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/user_style.css') }}">
 </head>
 <body>
     <div class="page-wrapper">
         
+        <!-- This section for displaying flashed messages is correct -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -19,7 +21,10 @@
 
         <div class="user-card">
             <header class="card-header">
-                <h1>{{ user_name }}'s Profile</h1>
+                <h1>
+                    <img src="{{ url_for('static', filename='imgs/icons/user.png') }}" alt="User Icon" class="header-icon">
+                    {{ user_name }}'s Profile
+                </h1>
             </header>
             
             <div class="card-content">
@@ -49,13 +54,38 @@
                         <input type="password" id="confirm_password" name="confirm_password" required>
                     </div>
 
+                    <!-- This hidden input passes the encoded username -->
                     <input type="hidden" name="uid" value="{{ user_name_encoded }}">
 
                     <button type="submit" class="submit-btn">Update Password</button>
                 </form>
             </details>
 
-            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+            <hr>
+
+            <!-- Navigation Buttons with Corrected url_for() endpoints -->
+            <div class="navigation-buttons">
+                <!-- CORRECTED: Endpoint for '/' is the 'home' function -->
+                <a href="{{ url_for('home') }}" class="nav-button">
+                    <img src="{{ url_for('static', filename='imgs/icons/user-interface.png') }}" alt="Main Page Icon" class="button-icon">
+                    Main Page
+                </a>
+                <!-- CORRECTED: Endpoint for '/products' is the 'products_page' function -->
+                <a href="{{ url_for('products_page') }}" class="nav-button">
+                    Products
+                </a>
+                <!-- CORRECT: Endpoint for '/cart' is the 'cart' function -->
+                <a href="{{ url_for('cart') }}" class="nav-button">
+                    <img src="{{ url_for('static', filename='imgs/icons/shopping-cart.png') }}" alt="Cart Icon" class="button-icon">
+                    Shopping Cart
+                </a>
+            </div>
+
+            <!-- CORRECT: Endpoint for '/logout' is the 'logout' function -->
+            <a href="{{ url_for('logout') }}" class="logout-button">
+                <img src="{{ url_for('static', filename='imgs/icons/enter.png') }}" alt="Logout Icon" class="button-icon">
+                Logout
+            </a>
         </div>
     </div>
 </body>

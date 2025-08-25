@@ -46,7 +46,7 @@
                 {% if products %}
                     {% for product in products %}
                     <div class="product-card">
-                        <img src="/{{ product.img }}" alt="{{ product.name }}">
+                        <img src="{{ product.img }}" alt="{{ product.name }}">
                         <h3>{{ product.name }}</h3>
                         <p class="product-year">Circa: {{ product.release_year }}</p>
                     </div>
