@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,16 +20,16 @@
             {% if username %}
                 <div class="user-greeting">
                     <a href="{{ url_for('user_page') }}">
-                        <p>Welcome back, {{ username }}</p>
+                        <p>you are logged in as: {{ username }}</p>
                     </a>
                 </div>
             {% endif %}
         </header>
 
         <nav class="main-nav">
-            <a href="{{ url_for('home') }}">> Home</a>
-            <a href="{{ url_for('login_page') }}">> Login</a>
-            <a href="{{ url_for('products_page') }}">> Products</a>
+            <a href="{{ url_for('products_page') }}"> Products</a>
+            <a href="{{ url_for('cart') }}"> Cart</a>
+            <a href="{{ url_for('login_page') }}"> Login</a>
         </nav>
 
         <main>
@@ -59,6 +59,7 @@
         
         <footer class="main-footer">
             <p>(C) 2025 RETRO-PWN INDUSTRIES. ALL RIGHTS RESERVED.</p>
+            <b>Disclaimer: This is not a real application. It is designed to be a vulnerable environment for a Capture The Flag (CTF) exercise. For more details, <a href="https://example.com">please visit here</a>.</b>
         </footer>
     </div>
 

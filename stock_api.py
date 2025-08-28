@@ -8,14 +8,6 @@ import random
 
 app = Flask(__name__)
 
-
-
-@app.before_request
-def limit_remote_addr():
-    if request.remote_addr != '127.0.0.1':
-        abort(403)  
-
-
 possible_ids = list(range(1, 18))
 
 possible_ids.remove(2)
@@ -35,4 +27,4 @@ def chackstock():
  
 
 if __name__ == "__main__":
-    app.run(debug=True, port=28001,host="0.0.0.0")
+    app.run(debug=True, port=8200,host="0.0.0.0")

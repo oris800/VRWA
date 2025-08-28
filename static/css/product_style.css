@@ -1,8 +1,32 @@
-/* General Body and Wrapper Styles */
+/*
+  ========================================
+  Modern Product Page Style
+  ========================================
+*/
+
+/* 1. Google Font Import & Color Palette
+-------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+
+:root {
+    --color-1: #6AAFB4; /* Teal Accent */
+    --color-2: #6A8AB4; /* Dusty Blue */
+    --color-3: #6F6AB4; /* Purplish Blue */
+
+    --border-radius: 16px;
+    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* 2. Global & Body Styles
+-------------------------------------------------- */
 body, html {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #eef2f3; /* Light background from the theme */
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-2);
+    background-image: linear-gradient(135deg, var(--color-3) 0%, var(--color-2) 100%);
+    background-attachment: fixed;
+    color: #333;
+    line-height: 1.6;
 }
 
 .page-wrapper {
@@ -14,21 +38,49 @@ body, html {
     box-sizing: border-box;
 }
 
-/* Main Product Container - Teal Theme */
+/* 3. Message Boxes
+-------------------------------------------------- */
+.message {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    width: 100%;
+    max-width: 1100px;
+    box-sizing: border-box;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+.message.message-error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.message.message-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+.message.message-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+/* 4. Main Product Container - Floating Card
+-------------------------------------------------- */
 .product-container {
     display: flex;
     flex-wrap: wrap;
     max-width: 1100px;
+    width: 100%;
     margin: 20px auto;
-    background-color: #008080; /* Dark Teal background */
-    color: #fff;
-    border-radius: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
     overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .product-image {
-    flex: 1 1 40%; /* Flex properties for responsive sizing */
+    flex: 1 1 40%;
     min-width: 350px;
     padding: 30px;
     box-sizing: border-box;
@@ -40,13 +92,13 @@ body, html {
 .product-image img {
     max-width: 100%;
     height: auto;
-    border-radius: 15px;
+    border-radius: 10px;
 }
 
 .product-details {
-    flex: 1 1 60%; /* Flex properties for responsive sizing */
+    flex: 1 1 60%;
     min-width: 350px;
-    padding: 30px;
+    padding: 40px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -54,169 +106,139 @@ body, html {
 
 .product-title {
     font-size: 2.8em;
-    font-weight: bold;
-    margin-top: 0;
-    margin-bottom: 10px;
+    font-weight: 700;
+    color: var(--color-3);
+    margin: 0 0 10px 0;
 }
 
 .product-price {
-    font-size: 2em;
-    font-weight: bold;
-    color: #b2dfdb; /* Light teal for emphasis */
+    font-size: 2.2em;
+    font-weight: 500;
+    color: var(--color-2);
     margin-bottom: 10px;
 }
 
 .product-release-date {
     font-size: 1em;
-    color: #e0f2f1;
+    color: #777;
     margin-bottom: 25px;
     opacity: 0.9;
 }
 
 .product-description {
     font-size: 1.1em;
-    line-height: 1.6;
-    flex-grow: 1; /* Pushes the button to the bottom */
-    margin-bottom: 25px;
+    flex-grow: 1;
+    margin-bottom: 30px;
+    color: #555;
 }
 
-/* Add to Cart Button */
+/* 5. Action Buttons
+-------------------------------------------------- */
 .add-to-cart-btn {
-    display: block;
-    width: 100%;
     padding: 15px;
-    background-color: #28a745; /* Green for primary action */
+    background: var(--color-1);
     color: white;
     border: none;
     border-radius: 10px;
     font-size: 1.2em;
-    font-weight: bold;
+    font-weight: 500;
     cursor: pointer;
     text-align: center;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .add-to-cart-btn:hover {
-    background-color: #218838;
+    background: #5a9a9e; /* Darker shade of color-1 */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-/* Message Box for Info/Errors */
-.message {
-    padding: 12px 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    color: white;
-    width: 100%;
-    max-width: 1100px;
-    box-sizing: border-box;
-    text-align: center;
-}
-.message.message-error {
-    background-color: #e74c3c; /* Red for errors */
-}
-.message.message-success {
-    background-color: #28a745; /* Green for success */
-}
-.message.message-info {
-    background-color: #3498db; /* Blue for info */
-}
-
-/* Responsive layout for smaller screens */
-@media (max-width: 800px) {
-    .product-container {
-        flex-direction: column;
-    }
-    .product-details {
-        text-align: center;
-    }
-}
-
-/* Out of Stock Button */
 .out-of-stock-btn {
-    background-color: #dc3545; /* Red color */
+    background-color: #aaa;
     cursor: not-allowed;
 }
 
 .out-of-stock-btn:hover {
-    background-color: #c82333; /* Darker red on hover */
+    background-color: #999;
 }
 
-
-/*======================================*/
-/*========= Comments Section ===========*/
-/*======================================*/
-
+/* 6. Comments Section - Another Floating Card
+-------------------------------------------------- */
 .comments-section {
     max-width: 1100px;
     width: 100%;
     margin-top: 30px;
-    padding: 30px;
-    background-color: #fff;
-    border-radius: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 30px 40px;
+    background: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
     box-sizing: border-box;
 }
 
 .comments-section h2, .comments-section h3 {
-    color: #008080; /* Dark Teal to match the theme */
-    border-bottom: 2px solid #e0f2f1;
+    color: var(--color-3);
+    border-bottom: 2px solid #f0f0f0;
     padding-bottom: 10px;
     margin-bottom: 20px;
-}
-
-.comments-list {
-    margin-bottom: 30px;
+    font-weight: 700;
 }
 
 .comment {
     padding: 15px 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.comment:last-child {
-    border-bottom: none;
-}
+.comment:last-child { border-bottom: none; }
 
 .comment-author strong {
-    color: #004d40; /* Darker Teal for author */
+    color: var(--color-2);
     font-size: 1.1em;
+    font-weight: 500;
 }
 
-.comment-body {
-    margin: 5px 0 0 0;
-    color: #333;
-    line-height: 1.6;
-}
+.comment-body { margin: 5px 0 0 0; }
 
 .add-comment-form textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 10px;
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 1em;
     box-sizing: border-box;
     margin-bottom: 10px;
     resize: vertical;
     min-height: 80px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.add-comment-form textarea:focus {
+    outline: none;
+    border-color: var(--color-2);
+    box-shadow: 0 0 0 3px rgba(106, 138, 180, 0.2);
 }
 
 .post-comment-btn {
-    display: block;
-    width: auto;
     min-width: 150px;
     padding: 12px 25px;
-    background-color: #3498db; /* Blue for secondary action */
+    background-color: var(--color-2); /* Blue for secondary action */
     color: white;
     border: none;
     border-radius: 10px;
     font-size: 1.1em;
-    font-weight: bold;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .post-comment-btn:hover {
-    background-color: #2980b9;
+    background-color: #587ab1; /* Darker shade of color-2 */
+    transform: translateY(-2px);
+}
+
+/* 7. Responsive Layout
+-------------------------------------------------- */
+@media (max-width: 800px) {
+    .product-container { flex-direction: column; }
+    .product-details { text-align: center; }
 }

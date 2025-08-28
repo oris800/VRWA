@@ -1,8 +1,31 @@
-/* General Body and Wrapper Styles */
+/*
+  ========================================
+  Modern Products Page Style
+  ========================================
+*/
+
+/* 1. Google Font Import & Color Palette
+-------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+
+:root {
+    --color-1: #6AAFB4; /* Teal Accent */
+    --color-2: #6A8AB4; /* Dusty Blue */
+    --color-3: #6F6AB4; /* Purplish Blue */
+
+    --border-radius: 16px;
+    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* 2. Global & Body Styles
+-------------------------------------------------- */
 body, html {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #eef2f3; /* Light background from the theme */
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-2);
+    background-image: linear-gradient(135deg, var(--color-3) 0%, var(--color-2) 100%);
+    background-attachment: fixed;
+    color: #333;
 }
 
 .page-wrapper {
@@ -12,33 +35,39 @@ body, html {
     box-sizing: border-box;
 }
 
-/* Main Content Container */
+/* 3. Main Content Container
+-------------------------------------------------- */
 .content-container {
     width: 100%;
     max-width: 1200px;
-    background-color: #fff; /* A clean white card for the main content */
+    background: rgba(255, 255, 255, 0.95);
     padding: 20px 30px;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .page-header {
     text-align: center;
     margin-bottom: 20px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #eee;
     padding-bottom: 20px;
 }
 
 .page-header h1 {
-    color: #008080; /* Dark Teal for the main title */
+    color: var(--color-3);
     margin: 0;
+    font-size: 2.5em;
+    font-weight: 700;
 }
+
 .page-header p {
     color: #555;
     font-size: 1.1em;
 }
 
-/* Navigation and Dropdown */
+/* 4. Navigation and Dropdown
+-------------------------------------------------- */
 .page-nav {
     display: flex;
     justify-content: space-between;
@@ -47,9 +76,10 @@ body, html {
 }
 
 .home-link {
-    color: #008080;
+    color: var(--color-2);
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 500;
+    font-size: 1.1em;
 }
 
 .dropdown {
@@ -58,19 +88,18 @@ body, html {
 }
 
 .dropbtn {
-    background-color: #f0f8f7;
-    color: #008080;
+    background-color: var(--color-2);
+    color: white;
     padding: 10px 20px;
     font-size: 16px;
-    font-weight: bold;
-    border: 2px solid #92cac4;
+    font-weight: 500;
+    border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s;
 }
 .dropbtn:hover {
-    background-color: #e0f2f1;
-    border-color: #469990;
+    background-color: #587ab1; /* Darker shade of color-2 */
 }
 
 .dropdown-content {
@@ -78,7 +107,7 @@ body, html {
     position: absolute;
     background-color: #ffffff;
     min-width: 180px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.15);
     border-radius: 8px;
     z-index: 1;
     overflow: hidden;
@@ -89,50 +118,48 @@ body, html {
     padding: 12px 16px;
     text-decoration: none;
     display: block;
+    transition: all 0.2s;
 }
 .dropdown-content a:hover {
-    background-color: #f1f1f1;
-    color: #008080;
+    background-color: var(--color-1);
+    color: white;
 }
 .dropdown:hover .dropdown-content {
     display: block;
 }
 
-/* Product Grid Layout */
+/* 5. Product Grid Layout
+-------------------------------------------------- */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 25px; /* Space between cards */
+    gap: 25px;
 }
 
-/* Individual Product Card */
+/* 6. Individual Product Card
+-------------------------------------------------- */
 .product-card {
     background-color: #fff;
-    border-radius: 15px;
+    border-radius: var(--border-radius);
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
-.product-card-image {
-    width: 100%;
-    height: 200px;
-    background-color: #f5f5f5;
-}
 .product-card-image img {
     width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ensures image covers the area nicely */
+    height: 200px;
+    object-fit: cover;
 }
 
 .product-card-content {
-    padding: 15px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -140,7 +167,7 @@ body, html {
 
 .product-name {
     font-size: 1.2em;
-    font-weight: 600;
+    font-weight: 700;
     margin: 0 0 5px 0;
     color: #333;
 }
@@ -150,24 +177,25 @@ body, html {
     font-size: 0.9em;
 }
 .product-price {
-    font-size: 1.3em;
-    font-weight: bold;
-    color: #008080;
-    margin: auto 0 15px 0; /* Pushes price down */
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--color-2);
+    margin: auto 0 15px 0;
 }
 
 .add-to-cart-btn {
     width: 100%;
     padding: 12px;
-    background-color: #28a745; /* Green for primary action */
+    background: var(--color-1);
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 1em;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.2s;
 }
 .add-to-cart-btn:hover {
-    background-color: #218838;
+    background-color: #5a9a9e;
+    transform: scale(1.02);
 }

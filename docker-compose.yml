@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_changeme
+      MYSQL_DATABASE: app
+      MYSQL_USER: retro_user
+      MYSQL_PASSWORD: 1234
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - retropwn-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    command: python3 backend.py
+    ports:
+      - "${WEB_PORT:-3000}:5000"
+    networks:
+      - retropwn-net
+    depends_on:
+      db:
+        condition: service_healthy
+      api_host:
+        condition: service_started
+
+
+  api_host:
+    build: .
+
+    command: sh ./start_apis.sh
+    ports:
+
+      - "8200:8200"
+    networks:
+      - retropwn-net
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  retropwn-net:
+    driver: bridge
+
+
+volumes:
+  db-data:

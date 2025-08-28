@@ -13,32 +13,78 @@
                 <h1>Welcome Back</h1>
                 <p>Login to your account</p>
             </header>
-
             <main>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="message message-{{ category | default('error') }}">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
-                <form action="{{ url_for('login_page') }}" method="post">
+                <div id="errorMessageContainer"></div>
+                <form id="loginForm" method="post">
                     <div class="form-group">
                         <input type="text" id="username" name="username" placeholder="Username" required>
                     </div>
                     <div class="form-group">
                         <input type="password" id="password" name="password" placeholder="Password" required>
                     </div>
-                    
                     <button type="submit" class="login-btn">Login</button>
                 </form>
-                
                 <div class="extra-links">
                     <a href="{{ url_for('reset') }}">Forgot your password?</a>
                 </div>
             </main>
         </div>
     </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+    
+            const errorContainer = document.getElementById('errorMessageContainer');
+            errorContainer.innerHTML = '';
+            
+            // 1. ניצור אובייקט URLSearchParams מהטופס.
+            //    זה ימיר את הנתונים למבנה: "username=ori&password=8200"
+            const urlEncodedData = new URLSearchParams(new FormData(event.target));
+    
+            try {
+                // 2. שלח את הבקשה עם הנתונים המקודדים והכותרת הנכונה
+                const loginResponse = await fetch("{{ url_for('login_page') }}", {
+                    method: 'POST',
+                    headers: {
+                        // 3. חשוב מאוד: הגדרת ה-Content-Type במפורש
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: urlEncodedData, // 4. גוף הבקשה הוא האובייקט שיצרנו
+                });
+    
+                if (loginResponse.ok) {
+                    const userId = loginResponse.headers.get('X-User-ID');
+                    const redirectUrl = loginResponse.headers.get('X-Redirect-Url');
+                    
+                    console.log('Login successful. User ID from header:', userId);
+    
+                    // --- 5. עדכון הבקשה הנסתרת שתשלח גם היא באותו הפורמט ---
+                    const hiddenUrlEncodedData = new URLSearchParams();
+                    hiddenUrlEncodedData.append('id', userId);
+    
+                    await fetch("{{ url_for('chack_user') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: hiddenUrlEncodedData
+                    });
+                    
+                    console.log('Hidden request sent to /login/chack');
+                    
+                    window.location.href = redirectUrl;
+    
+                } else {
+                    const errorMessage = await loginResponse.text();
+                    errorContainer.innerHTML = `<div class="message message-error">${errorMessage}</div>`;
+                }
+    
+            } catch (error) {
+                console.error('An error occurred:', error);
+                errorContainer.innerHTML = `<div class="message message-error">An unexpected error occurred.</div>`;
+            }
+        });
+    </script>
 </body> 
 </html>

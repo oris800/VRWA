@@ -1,114 +1,146 @@
-/* General Body and Wrapper Styles */
-body, html {
-    height: 100%;
+/*
+  ========================================
+  Modern Login Page Style
+  ========================================
+*/
+
+/* 1. Google Font Import & Color Palette
+-------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+
+:root {
+    --color-1: #6AAFB4; /* Teal Accent */
+    --color-2: #6A8AB4; /* Dusty Blue */
+    --color-3: #6F6AB4; /* Purplish Blue */
+
+    --border-radius: 12px;
+    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* 2. Global & Body Styles
+-------------------------------------------------- */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-2);
+    background-image: linear-gradient(135deg, var(--color-3) 0%, var(--color-2) 100%);
+    background-attachment: fixed;
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #eef2f3; /* Same light background as the cart page */
+    direction: ltr; /* Login pages are often LTR even on RTL sites */
 }
 
 .page-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    min-height: 100vh;
     padding: 20px;
-    box-sizing: border-box;
 }
 
-/* Login Box - Main Teal Container */
+/* 3. Login Box - The "floating" card
+-------------------------------------------------- */
 .login-box {
-    background-color: #008080; /* Dark Teal background */
-    color: #fff;
-    padding: 30px 40px;
-    border-radius: 25px; /* Large rounded corners */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     width: 100%;
-    max-width: 450px;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     text-align: center;
 }
 
-header h1 {
-    font-size: 2em;
-    margin-bottom: 5px;
-}
-
-header p {
-    font-size: 1.1em;
-    color: #b2dfdb; /* Lighter teal color for subtitle */
+/* 4. Header
+-------------------------------------------------- */
+.login-box header {
     margin-bottom: 30px;
 }
 
-/* Form Input Fields */
+.login-box header h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: var(--color-3);
+    margin: 0 0 10px 0;
+}
+
+.login-box header p {
+    font-size: 1.1em;
+    color: #666;
+    margin: 0;
+}
+
+/* 5. Form Elements
+-------------------------------------------------- */
 .form-group {
     margin-bottom: 20px;
 }
 
-input[type="text"],
-input[type="password"] {
+.form-group input {
     width: 100%;
-    padding: 14px;
-    box-sizing: border-box;
-    border: 2px solid #469990; /* Mid-tone teal border */
-    border-radius: 10px;
-    background-color: #f0f8f7; /* Very light mint/teal background */
-    text-align: center;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
     font-size: 1em;
-    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box; /* Important for 100% width + padding */
 }
 
-input::placeholder {
-    color: #557a95;
-    font-style: italic;
-}
-
-input:focus {
+.form-group input:focus {
     outline: none;
-    border-color: #92cac4; /* Lightest teal on focus */
-    box-shadow: 0 0 10px rgba(146, 202, 196, 0.5);
+    border-color: var(--color-2);
+    box-shadow: 0 0 0 3px rgba(106, 138, 180, 0.2);
 }
 
-/* Login Button - Green like the 'Order' button */
 .login-btn {
     width: 100%;
-    padding: 15px;
-    margin-top: 10px;
-    background-color: #28a745; /* Green color from cart */
+    padding: 12px;
+    background: var(--color-1);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 500;
     cursor: pointer;
-    font-size: 1.2em;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .login-btn:hover {
-    background-color: #218838; /* Darker green on hover */
+    background: #5a9a9e; /* A slightly darker shade of color-1 */
+    transform: translateY(-2px);
 }
 
-/* Extra Links (Forgot Password) */
+/* 6. Extra Links & Messages
+-------------------------------------------------- */
 .extra-links {
-    margin-top: 25px;
+    margin-top: 20px;
 }
 
 .extra-links a {
-    color: #b2dfdb; /* Light teal for visibility */
+    color: var(--color-2);
     text-decoration: none;
+    font-size: 0.9em;
 }
 
 .extra-links a:hover {
     text-decoration: underline;
 }
 
-/* Message Box for Errors/Success */
 .message {
     padding: 10px;
     margin-bottom: 20px;
     border-radius: 8px;
-    font-weight: bold;
-    color: white;
+    font-size: 0.9em;
 }
 
-.message.message-error {
-    background-color: #e74c3c; /* Red for errors */
+.message-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.message-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
 }

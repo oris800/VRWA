@@ -1,14 +1,36 @@
-/* General Body and Wrapper Styles */
+/*
+  ========================================
+  Modern User Profile Page Style
+  ========================================
+*/
+
+/* 1. Google Font Import & Color Palette
+-------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap');
+
+:root {
+    --color-1: #6AAFB4; /* Teal Accent */
+    --color-2: #6A8AB4; /* Dusty Blue */
+    --color-3: #6F6AB4; /* Purplish Blue */
+
+    --border-radius: 16px;
+    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* 2. Global & Body Styles
+-------------------------------------------------- */
 body, html {
     height: 100%;
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #eef2f3; /* Light background from the theme */
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-2);
+    background-image: linear-gradient(135deg, var(--color-3) 0%, var(--color-2) 100%);
+    background-attachment: fixed;
 }
 
 .page-wrapper {
     display: flex;
-    flex-direction: column; /* Allow message to sit above the card */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100%;
@@ -16,13 +38,15 @@ body, html {
     box-sizing: border-box;
 }
 
-/* User Card - Main Teal Container */
+/* 3. User Card - The Floating Container
+-------------------------------------------------- */
 .user-card {
-    background-color: #008080; /* Dark Teal background */
-    color: #fff;
-    padding: 25px 35px;
-    border-radius: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    padding: 30px 40px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     width: 100%;
     max-width: 500px;
     text-align: left;
@@ -33,167 +57,149 @@ body, html {
     align-items: center;
     justify-content: center;
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 1.8em;
-}
-
-.header-icon {
-    height: 1.2em; /* Match icon size to font size */
-    margin-right: 15px;
+    margin-bottom: 25px;
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--color-3);
 }
 
 .card-content p {
     font-size: 1.1em;
     margin: 10px 0;
+    line-height: 1.6;
 }
 
 .card-content strong {
-    color: #b2dfdb; /* Lighter teal color for emphasis */
+    color: var(--color-2);
+    font-weight: 500;
 }
 
 hr {
     border: none;
-    border-top: 1px solid #469990; /* Mid-tone teal border */
+    border-top: 1px solid #eee;
     margin: 25px 0;
 }
 
-/* Collapsible Password Section */
+/* 4. Collapsible Password Section
+-------------------------------------------------- */
 .password-details summary {
     font-size: 1.1em;
-    font-weight: bold;
+    font-weight: 500;
     cursor: pointer;
     padding: 10px;
     border-radius: 8px;
     transition: background-color 0.2s;
+    color: var(--color-2);
 }
 
 .password-details summary:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: #f0f5ff;
 }
 
 .change-password-form {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
     padding: 20px;
     margin-top: 10px;
     border-radius: 8px;
-}
-
-.form-group {
-    margin-bottom: 15px;
+    border: 1px solid #eee;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 5px;
+    font-weight: 500;
 }
 
 .form-group input[type="password"] {
     width: 100%;
     padding: 12px;
     box-sizing: border-box;
-    border: 2px solid #469990;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    background-color: #f0f8f7;
     font-size: 1em;
     color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.form-group input[type="password"]:focus {
+    outline: none;
+    border-color: var(--color-2);
+    box-shadow: 0 0 0 3px rgba(106, 138, 180, 0.2);
 }
 
-/* --- Buttons Section --- */
-
+/* 5. Buttons Section
+-------------------------------------------------- */
 .button-icon {
     height: 18px;
     margin-right: 8px;
+    vertical-align: middle;
 }
 
-/* Navigation Buttons Container */
 .navigation-buttons {
     display: flex;
-    justify-content: space-between;
-    gap: 10px; /* Space between buttons */
-    margin-bottom: 20px; /* Space before logout button */
+    gap: 15px;
+    margin-bottom: 25px;
 }
 
-/* Individual Navigation Button */
-.nav-button {
-    flex-grow: 1; /* Allows buttons to share space equally */
+.nav-button, .submit-btn, .logout-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 12px;
-    background-color: #3498db; /* Blue for navigation */
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
     border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
     font-size: 1em;
 }
 
-.nav-button:hover {
-    background-color: #2980b9; /* Darker blue on hover */
+.nav-button:hover, .submit-btn:hover, .logout-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
-/* Update Password Button */
+.nav-button {
+    flex-grow: 1;
+    background-color: var(--color-2); /* Secondary action color */
+}
+.nav-button:hover {
+    background-color: #587ab1;
+}
+
 .submit-btn {
     width: 100%;
-    padding: 12px;
     margin-top: 10px;
-    background-color: #28a745; /* Green for primary action */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+    background-color: var(--color-1); /* Primary action color */
     font-size: 1.1em;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
 }
-
 .submit-btn:hover {
-    background-color: #218838;
+    background-color: #5a9a9e;
 }
 
-/* Logout Button */
 .logout-button {
-    display: flex; /* Changed from block to flex */
-    align-items: center;
-    justify-content: center;
-    width: 100%; /* Changed to full width */
-    margin: 0 auto;
-    padding: 12px;
-    box-sizing: border-box;
-    background-color: #e74c3c; /* Red for destructive action */
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+    width: 100%;
+    background-color: #e74c3c; /* Destructive action color */
 }
 
 .logout-button:hover {
     background-color: #c0392b;
 }
 
-/* Message Box for Info/Errors */
+/* 6. Message Box
+-------------------------------------------------- */
 .message {
     padding: 12px 20px;
     margin-bottom: 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    color: white;
+    border-radius: var(--border-radius);
+    font-weight: 500;
     width: 100%;
     max-width: 500px;
     box-sizing: border-box;
     text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
-.message.message-error {
-    background-color: #e74c3c; /* Red for errors */
-}
-.message.message-success {
-    background-color: #28a745; /* Green for success */
-}
-.message.message-info {
-    background-color: #3498db; /* Blue for info */
-}
+.message.message-error { background-color: #f8d7da; color: #721c24; }
+.message.message-success { background-color: #d4edda; color: #155724; }
+.message.message-info { background-color: #d1ecf1; color: #0c5460; }

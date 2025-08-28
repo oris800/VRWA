@@ -10,16 +10,6 @@
     <div class="page-wrapper">
         <a href="/cart">Shopping Cart</a>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, text in messages %}
-                    <div class="message message-{{ category|default('info') }}">
-                        {{ text }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
         <div class="product-container">
             <div class="product-image">
                 <img src="{{ product.image_url }}" alt="Image of {{ product.name }}">
@@ -27,18 +17,15 @@
 
             <div class="product-details">
                 <h1 class="product-title">{{ product.name }}</h1>
-                <p class="product-price">${{ product.price }}</p>
+                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
                 <p class="product-release-date">Release Date: {{ product.release_date }}</p>
-                <p class="product-description">{{ product.description or "No description is available for this product." }}</p>
-    
-                <form method="POST" action="{{ url_for('product', id=product.id) }}">
-                    <input type="hidden" name="stockapi" value="http://127.0.0.1:28001/chackstock?item_id={{ product.id }}">
-                    {% if in_stock %}
-                        <button type="submit" class="add-to-cart-btn">Add to Cart</button>
-                    {% else %}
-                        <button type="button" class="add-to-cart-btn out-of-stock-btn" disabled>Out of Stock</button>
-                    {% endif %}
+                
+                <form id="stockForm" method="POST">
+                    <input type="hidden" name="stockapi" value="http://api_host:8200/chackstock?item_id={{ product.id }}">
+                    <button type="submit" id="cartButton" class="add-to-cart-btn">Add to Cart</button>
                 </form>
+
+                <div id="responseMessage" style="margin-top: 10px;"></div>
             </div>
         </div>
         
@@ -46,28 +33,20 @@
 
         <div class="comments-section">
             <h2>Comments</h2>
-
             <div class="comments-list">
-                {% if comments %}
-                    {% for comment in comments %}
-                        <div class="comment">
-                            <p class="comment-author"><strong>user:  {{ comment[2] }}</strong></p>
-                        
-                            <pre>comment: <code>{{ comment[1] }}</code></pre>
-
-                            <div style="display: none;">{{ comment[1] | safe }}</div>
-                            
-                            {% if comment[2] == session_username %}
-                                <form method="POST" action="{{ url_for('product', id=product.id) }}" style="display: inline-block;">
-                                    <input type="hidden" name="delete_comment_id" value="{{ comment[0] }}">
-                                    <button type="submit">Delete</button>
-                                </form>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+                {% for comment in comments %}
+                    <div class="comment">
+                        <p><strong>{{ comment.username }}:</strong> {{ comment.comment_text }}</p>
+                        {% if comment.username == session_username %}
+                            <form method="POST" action="{{ url_for('product', id=product.id) }}" style="display: inline;">
+                                <input type="hidden" name="delete_comment_id" value="{{ comment[0] }}">
+                                <button type="submit">Delete</button>
+                            </form>
+                        {% endif %}
+                    </div>
                 {% else %}
-                    <p>No comments yet. Be the first to comment!</p>
-                {% endif %}
+                    <p>No comments yet.</p>
+                {% endfor %}
             </div>
 
             <div class="add-comment-form">
@@ -79,5 +58,56 @@
             </div>
         </div>
     </div>
-</body>
+
+    <script>
+        document.getElementById('stockForm').addEventListener('submit', async function(event) {
+            // 1. מנע את טעינת הדף מחדש
+            event.preventDefault(); 
+    
+            const cartButton = document.getElementById('cartButton');
+            const responseMessage = document.getElementById('responseMessage');
+            const formData = new URLSearchParams(new FormData(event.target));
+            
+            // עדכן את הכפתור בזמן שליחת הבקשה
+            cartButton.disabled = true;
+            cartButton.innerText = 'Checking...';
+            responseMessage.innerHTML = '';
+    
+            try {
+                // 2. שלח את הבקשה ה"נסתרת" לשרת
+                const response = await fetch("{{ url_for('product', id=product.id) }}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+    
+                // 3. קבל את התגובה כטקסט רגיל
+                const responseText = await response.text();
+    
+                // 4. עדכן את הדף בהתאם לתשובה מהשרת
+                if (response.ok) {
+                    if (responseText === 'in_stock') {
+                        responseMessage.innerHTML = `<p style="color: green;">Item added to cart!</p>`;
+                        cartButton.innerText = 'Added!';
+                    } else if (responseText === 'out_of_stock') {
+                        responseMessage.innerHTML = `<p style="color: red;">Sorry, this item is out of stock.</p>`;
+                        cartButton.innerText = 'Out of Stock';
+                    } else {
+                        responseMessage.innerHTML = `<p style="color: orange;">${responseText}</p>`;
+                    }
+                } else {
+                    responseMessage.innerHTML = `<p style="color: red;">Error: ${responseText}</p>`;
+                    cartButton.disabled = false;
+                    cartButton.innerText = 'Try Again';
+                }
+    
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                responseMessage.innerHTML = '<p style="color: red;">A network error occurred.</p>';
+                cartButton.disabled = false;
+                cartButton.innerText = 'Try Again';
+            }
+        });
+    </script>
+</body> 
 </html>
