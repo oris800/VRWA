@@ -27,7 +27,7 @@
         <section class="user-update">
             <form method="POST" action="">
                 <div class="form-group">
-                    <label for="addUser">Update user to "internal":</label>
+                    <label for="addUser">Update user to internal:</label>
                     <input type="text" id="addUser" name="addUser" placeholder="Enter name..." required>
                     <button type="submit">Update</button>
                 </div>
@@ -39,14 +39,22 @@
         <section class="log-viewer">
             <h2>Log File Viewer</h2>
             <form method="POST" action="">
+                <input type="hidden" name="fp" value="log.txt">
                 <div class="form-group">
-                    <label for="fp">File Path:</label>
-                    <input type="text" id="fp" name="fp" value="log.txt" type="hidden" >
-                    <button type="submit">Show Log</button>
+                    <button type="submit" style="width: 100%;">Show Log</button>
                 </div>
             </form>
             <textarea readonly>{{ log_content }}</textarea>
         </section>
+
+        <hr>
+
+        <div class="logout-container">
+            <a href="{{ url_for('logout') }}" class="logout-button">
+                <img src="{{ url_for('static', filename='imgs/icons/enter.png') }}" alt="Logout Icon">
+                Logout
+            </a>
+        </div>
     </main>
 </body>
 </html>

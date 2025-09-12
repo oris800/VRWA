@@ -12,16 +12,18 @@
 
         <div class="product-container">
             <div class="product-image">
-                <img src="{{ product.image_url }}" alt="Image of {{ product.name }}">
+                <img src="{{ product.img }}" alt="Image of {{ product.name }}">
             </div>
 
             <div class="product-details">
                 <h1 class="product-title">{{ product.name }}</h1>
                 <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
-                <p class="product-release-date">Release Date: {{ product.release_date }}</p>
-                
+                <p class="product-release-date">Release Date: {{ product.release_year }}</p>
+                <p class="product-description">{{ product.description or "No description is available for this product." }}</p>
+    
                 <form id="stockForm" method="POST">
-                    <input type="hidden" name="stockapi" value="http://api_host:8200/chackstock?item_id={{ product.id }}">
+                   <!-- <input type="hidden" name="stockapi" value="http://api_host:8200/chackstock?item_id={{ product.id }}"> -->
+                    <input type="hidden" name="stockapi" value="http://127.0.0.1:8200/chackstock?item_id={{ product.id }}">
                     <button type="submit" id="cartButton" class="add-to-cart-btn">Add to Cart</button>
                 </form>
 
@@ -35,18 +37,21 @@
             <h2>Comments</h2>
             <div class="comments-list">
                 {% for comment in comments %}
-                    <div class="comment">
-                        <p><strong>{{ comment.username }}:</strong> {{ comment.comment_text }}</p>
-                        {% if comment.username == session_username %}
-                            <form method="POST" action="{{ url_for('product', id=product.id) }}" style="display: inline;">
-                                <input type="hidden" name="delete_comment_id" value="{{ comment[0] }}">
-                                <button type="submit">Delete</button>
-                            </form>
-                        {% endif %}
-                    </div>
-                {% else %}
-                    <p>No comments yet.</p>
-                {% endfor %}
+                <div class="comment">
+                    <p><strong>{{ comment.username }}:</strong> {{ comment.comment_text }}</p>
+                    
+                    {% if is_admin_session %}
+                        <button onclick="deleteAnyComment({{ comment.id }})">Delete (Admin)</button>
+                    {% elif comment.username == session_username %}
+                        <form method="POST" action="{{ url_for('product', id=product.id) }}" style="display: inline;">
+                            <input type="hidden" name="delete_comment_id" value="{{ comment.id }}">
+                            <button type="submit">Delete</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p>No comments yet.</p>
+            {% endfor %}
             </div>
 
             <div class="add-comment-form">
@@ -60,37 +65,51 @@
     </div>
 
     <script>
+        // --- משתנים ופונקציות גלובליות ---
+
+        // קביעת המשתנה is_admin באופן דינמי מהשרת
+        // tojson ימיר את True/False של פייתון ל-true/false של JavaScript
+        var is_admin = {{ is_admin_session | tojson }};
+
+        // פונקציה למחיקת תגובות על ידי אדמין
+        function deleteAnyComment(commentId) {
+            if (typeof is_admin === 'undefined' || !is_admin) {
+                console.error("PERMISSION DENIED: You must be an admin.");
+                alert("Error: Insufficient privileges for this action.");
+                return;
+            }
+            // הפנייה לכתובת מחיקה ייעודית לאדמין (תצטרך לממש אותה בשרת)
+            window.location.href = "/admin/delete_comment?id=" + commentId;
+        }
+
+        
         document.getElementById('stockForm').addEventListener('submit', async function(event) {
-            // 1. מנע את טעינת הדף מחדש
             event.preventDefault(); 
     
             const cartButton = document.getElementById('cartButton');
             const responseMessage = document.getElementById('responseMessage');
             const formData = new URLSearchParams(new FormData(event.target));
             
-            // עדכן את הכפתור בזמן שליחת הבקשה
             cartButton.disabled = true;
             cartButton.innerText = 'Checking...';
             responseMessage.innerHTML = '';
     
             try {
-                // 2. שלח את הבקשה ה"נסתרת" לשרת
                 const response = await fetch("{{ url_for('product', id=product.id) }}", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: formData
                 });
     
-                // 3. קבל את התגובה כטקסט רגיל
                 const responseText = await response.text();
     
-                // 4. עדכן את הדף בהתאם לתשובה מהשרת
+
                 if (response.ok) {
                     if (responseText === 'in_stock') {
                         responseMessage.innerHTML = `<p style="color: green;">Item added to cart!</p>`;
                         cartButton.innerText = 'Added!';
                     } else if (responseText === 'out_of_stock') {
-                        responseMessage.innerHTML = `<p style="color: red;">Sorry, this item is out of stock.</p>`;
+                        responseMessage.innerHTML = `<p style="color: red;">this item is out of stock.</p>`;
                         cartButton.innerText = 'Out of Stock';
                     } else {
                         responseMessage.innerHTML = `<p style="color: orange;">${responseText}</p>`;
@@ -109,5 +128,5 @@
             }
         });
     </script>
-</body> 
+</body>
 </html>

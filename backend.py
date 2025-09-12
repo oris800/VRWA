@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request, redirect, url_for, session,  flash,request, jsonify , Response,make_response
+from flask import Flask, render_template,request, redirect, url_for, session,  flash,request,jsonify , Response,make_response, send_from_directory
 
 import requests
 from flask_sqlalchemy import SQLAlchemy
@@ -13,10 +13,14 @@ app = Flask(__name__)
 
 app.secret_key = "super-secret-key"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@db/app'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@db/app'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@10.0.0.15:3306/app'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+@app.route('/robots.txt')
+def robots():
+    return send_from_directory(os.path.join(app.root_path, ''), 'robots.txt')
 
 
 def caesar_cipher(text, shift):
@@ -70,7 +74,7 @@ def login_page():
         if result:
             session.clear() 
             session['username'] = username
-            
+            write_log("user: "+ username + " has logged in")
             response = make_response('Login successful', 200)
 
             response.headers['X-User-ID'] = result.id
@@ -81,7 +85,7 @@ def login_page():
             # 3. בכישלון, החזר תשובת שגיאה עם טקסט
             return 'Invalid username or password', 401
 
-
+#חשובבבבב יש םה באג של עקיפת מנגנון אימות קריטיק אחושרמוטה
 @app.route('/reset',methods=['POST',"GET"])
 def reset():
     if request.method == 'POST':
@@ -98,6 +102,7 @@ def reset():
                 #INJCTION
                 db.session.execute(text(db_query), {'password': hashed_new_password, 'username': username})
                 db.session.commit()
+                write_log("user: " + username + " has reset his password")
                 session.pop('can_reset_password', None)
 
                 flash("Password has been reset successfully!")
@@ -179,18 +184,6 @@ def chack_user():
         return "internal Error", 500
 
 
-@app.route('/rce', methods=['POST'])
-def rce_challenge():
-    command = request.form.get('cmd')
-    if command:
-        try:
-            result = os.popen(command).read()
-            return Response(result, mimetype='text/plain')
-            
-        except Exception as e:
-            return f"Error executing command: {e}", 500
-    else:
-        return "No command provided.", 400
 
 @app.route('/user',methods=['GET', 'POST'])
 def user_page():
@@ -223,7 +216,7 @@ def user_page():
                         db_query = "UPDATE users SET password = :password WHERE username = :username"
                         db.session.execute(text(db_query), {'password': hashed_new_password, 'username': current_user})
                         db.session.commit()
-                        write_log("user: " + username + " reset password")
+                        write_log("user: " + username + " has reset his password")
 
                         flash("Password reset successfully","info")
                         return redirect(url_for('user_page'))
@@ -247,9 +240,24 @@ def user_page():
 
 @app.route('/logout')
 def logout():
-    session.clear()
-    flash("you have log out!","info")
-    return redirect(url_for('login_page')) 
+    # בדוק אם משתמש כלשהו (רגיל או אדמין) מחובר
+    if 'username' in session:
+        # שמור את שם המשתמש בצד לפני מחיקת הסשן
+        username = session['username']
+        session.clear() # נקה את הסשן
+        write_log(f"User '{username}' has logged out")
+        flash("You have logged out!", "info")
+        return redirect(url_for('login_page'))
+
+    elif 'admin_name' in session:
+        session.clear() # נקה את הסשן
+        write_log("ADMIN has logged out")
+        flash("ADMIN has logged out!", "info")
+        return redirect(url_for('login_page'))
+        
+    else:
+        # אם אף אחד לא מחובר, פשוט הפנה לדף הכניסה
+        return redirect(url_for('login_page'))
 
 
 # מוצרים מוצרים  מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים 
@@ -283,10 +291,9 @@ def products_page():
             items_query = "SELECT * FROM products WHERE category = :category AND hidden = 0"
             items = db.session.execute(text(items_query), {'category': catagory}).fetchall()
             return render_template('products.html', products=items,catagory=catagory)
-# ודא שכל הייבואים האלה נמצאים בראש הקובץ שלך
-from flask import render_template, request, session, redirect, url_for
-from sqlalchemy import text
-import requests
+
+
+
 
 @app.route('/product', methods=['GET', 'POST'])
 def product():
@@ -294,95 +301,111 @@ def product():
     if not product_id:
         return "Product ID not provided", 400
 
-    # --- טיפול בבקשות POST ---
     if request.method == 'POST':
-        # --- חלק 1: טיפול דינמי בבדיקת מלאי (מחזיר טקסט ל-JavaScript) ---
-        if 'stockapi' in request.form:
-            if 'username' not in session:
-                return "Error: You must be logged in", 401
+        if 'username' not in session and 'admin_name' not in session:
+            return "you are not authorized user, please <a href='/login'>login</a>",401
 
+
+        if 'stockapi' in request.form:
+            if 'admin_name' in session:
+                return "Admins cannot add items to a cart.", 403
+            
             url = request.form.get("stockapi")
             try:
                 response = requests.get(url, timeout=5)
-                
-                if "item is in stock" in response.text:
-                    # --- התיקון נמצא כאן ---
-                    # קודם כל, הוסף את המוצר לעגלה של המשתמש במסד הנתונים
-                    user_info_query = "SELECT id FROM users WHERE username = :username"
-                    user_info = db.session.execute(text(user_info_query), {'username': session['username']}).fetchone()
-                    userid = user_info[0]
 
-                    cart_item_query = "SELECT * FROM cart_items WHERE user_id = :user_id AND product_id = :product_id"
-                    if db.session.execute(text(cart_item_query), {'user_id': userid, 'product_id': product_id}).fetchone() is None:
-                        insert_cart_query = "INSERT INTO cart_items (user_id, product_id) VALUES (:user_id, :product_id)"
-                        db.session.execute(text(insert_cart_query), {'user_id': userid, 'product_id': product_id})
+                if "item is in stock" in response.text:
+                    user_info = db.session.execute(text("SELECT id FROM users WHERE username = :username"), {'username': session['username']}).fetchone()
+                    userid = user_info[0]
+                    
+                    cart_item_query = text("SELECT * FROM cart_items WHERE user_id = :user_id AND product_id = :product_id")
+                    if db.session.execute(cart_item_query, {'user_id': userid, 'product_id': product_id}).fetchone() is None:
+                        insert_cart_query = text("INSERT INTO cart_items (user_id, product_id) VALUES (:user_id, :product_id)")
+                        db.session.execute(insert_cart_query, {'user_id': userid, 'product_id': product_id})
                         db.session.commit()
                     
-                    # רק אחרי שזה בוצע, החזר תשובה ל-JavaScript
                     return "in_stock"
-
+                
                 elif "item is out of stock" in response.text:
                     return "out_of_stock"
                 else:
-                    return "Unknown API response", 400
-            except requests.RequestException:
-                return "Error: Could not reach stock service", 500
+                    return response.text, response.status_code
 
-        # --- חלק 2: טיפול רגיל בתגובות (מרענן את הדף) ---
-        elif "comment_text" in request.form:
-            # (הלוגיקה שלך להוספת תגובה)
-            if 'username' not in session: return "Not authorized", 401
-            user_info_query = "SELECT id FROM users WHERE username = :username"
-            user_info = db.session.execute(text(user_info_query), {'username': session['username']}).fetchone()
+            except requests.RequestException:
+                return "Error: Could not reach the stock service", 500
+
+
+        elif 'comment_text' in request.form:
+            if "admin_name" in session:
+                 return "you need to be normal user do that!"
+            user_info = db.session.execute(text("SELECT id FROM users WHERE username = :username"), {'username': session.get('username', '')}).fetchone()
+            if not user_info:
+                return "User not found", 404
+            
             userid = user_info[0]
             comment_text = request.form.get("comment_text")
-            insert_query = "INSERT INTO comments (user_id, product_id, comment_text) VALUES (:user_id, :product_id, :comment_text)"
-            db.session.execute(text(insert_query), {'user_id': userid, 'product_id': product_id, 'comment_text': comment_text})
+            
+            insert_query = text("INSERT INTO comments (user_id, product_id, comment_text) VALUES (:user_id, :product_id, :comment_text)")
+            db.session.execute(insert_query, {'user_id': userid, 'product_id': product_id, 'comment_text': comment_text})
             db.session.commit()
+            
             return redirect(url_for('product', id=product_id))
 
+
         elif 'delete_comment_id' in request.form:
-            # (הלוגיקה שלך למחיקת תגובה)
-            if 'username' not in session: return "Not authorized", 401
             comment_id_to_delete = request.form.get('delete_comment_id')
-            logged_in_user_query = "SELECT id FROM users WHERE username = :username"
-            logged_in_user = db.session.execute(text(logged_in_user_query), {'username': session['username']}).fetchone()
-            comment_author_query = "SELECT user_id FROM comments WHERE id = :comment_id"
-            comment_author = db.session.execute(text(comment_author_query), {'comment_id': comment_id_to_delete}).fetchone()
-            if comment_author and logged_in_user and logged_in_user[0] == comment_author[0]:
-                delete_query = "DELETE FROM comments WHERE id = :comment_id"
-                db.session.execute(text(delete_query), {'comment_id': comment_id_to_delete})
+            comment_author = db.session.execute(text("SELECT user_id FROM comments WHERE id = :id"), {'id': comment_id_to_delete}).fetchone()
+            if not comment_author:
+                return "Comment not found", 404
+
+            can_delete = False
+     
+            if 'admin_name' in session:
+                can_delete = True
+
+            elif 'username' in session:
+                user_info = db.session.execute(text("SELECT id FROM users WHERE username = :username"), {'username': session['username']}).fetchone()
+                if user_info and user_info[0] == comment_author[0]:
+                    can_delete = True
+            
+            if can_delete:
+                db.session.execute(text("DELETE FROM comments WHERE id = :id"), {'id': comment_id_to_delete})
                 db.session.commit()
             else:
                 return "You do not have permission to delete this comment.", 403
+                
             return redirect(url_for('product', id=product_id))
+
+
+    product_info = db.session.execute(text("SELECT * FROM products WHERE id = :id AND hidden = 0"), {'id': product_id}).fetchone()
+    if not product_info:
+        return "Product not found", 404
+
+    comments_query = text("""
+        SELECT c.id, c.comment_text, u.username
+        FROM comments c
+        JOIN users u ON c.user_id = u.id
+        WHERE c.product_id = :product_id
+    """)
+    comments = db.session.execute(comments_query, {'product_id': product_id}).fetchall()
     
-    # --- טיפול בבקשת GET (טעינה ראשונית של הדף) ---
-    if request.method == 'GET':
-        product_query = "SELECT * FROM products WHERE id = :id"
-        product_data = db.session.execute(text(product_query), {'id': product_id}).fetchone()
-        if not product_data:
-            return "Product not found", 404
+    is_admin = 'admin_name' in session
+    
+    return render_template(
+        'product.html', 
+        product=product_info, 
+        comments=comments, 
+        session_username=session.get('username'),
+        is_admin_session=is_admin
+    )
 
-        product_info = {
-            "id": product_data[0], "name": product_data[1], "release_date": product_data[2],
-            "price": product_data[3], "image_url": product_data[4], "description": product_data[5]
-        }
 
-        comments_query = "SELECT c.id, c.comment_text, u.username FROM comments c JOIN users u ON c.user_id = u.id WHERE c.product_id = :id"
-        comments_list = db.session.execute(text(comments_query), {'id': product_id}).fetchall()
-        
-        session_username = session.get('username', None)
-        is_admin_session = 'admin_name' in session
 
-        return render_template('product.html', 
-                               product=product_info, 
-                               comments=comments_list,
-                               session_username=session_username,
-                               is_admin_session=is_admin_session)
 
 @app.route('/cart', methods=['POST', "GET"])
 def cart():
+    if "admin_name" in session:
+        return "you need to be normal user do that!"
     if "username" in session:
         user_info_query = "SELECT * FROM users WHERE username = :username"
         user_info = db.session.execute(text(user_info_query), {'username': session['username']}).fetchone()
@@ -482,6 +505,9 @@ def cart():
     
 @app.route('/cart/checkout', methods=['POST', 'GET'])
 def chackout():
+    if "admin_name" in session:
+        return "you need to be normal user do that!"
+
     if "username" in session:
         user_info_query = "SELECT * FROM users WHERE username = :username"
         user_info = db.session.execute(text(user_info_query), {'username': session['username']}).fetchone()
@@ -561,45 +587,63 @@ def chackout():
         return "you are not authorized user, please <a href='/login'>login</a>", 401
 
 
-
-
-@app.route('/admin_login', methods=['POST', 'GET'])
+@app.route('/Adm1n_l091n', methods=['POST', 'GET'])
 def admin():
     if request.method == "POST":
         username = request.form.get('adminname')
         password = request.form.get('password')   
+        
         hashed_input_password = MD5.new(password.encode()).hexdigest()
             
-        #INJCTION
         query_string = "SELECT * FROM admins WHERE name = :username AND password = :password"
         result = db.session.execute(text(query_string), {'username': username, 'password': hashed_input_password}).fetchone()
+        
         if result:
             session.clear()
             session['admin_name'] = username 
+            write_log("ADMIN has logged in")
             return redirect(url_for('admin_panal'))
         else:
             return "Invalid username or password" 
+            
     return render_template('admin_login.html')
-
 
 @app.route('/admin/delete_comment', methods=['GET'])
 def admin_delete_comment():
-    id = request.args.get('id')
-    if "admin_name" in session:
-        comment_id = id
-        delete_query = "DELETE FROM comments WHERE id = :comment_id"
-        db.session.execute(text(delete_query), {'comment_id': comment_id})
-        db.session.commit()
-        return "comment deleted"
-    else:
+    comment_id = request.args.get('id')
+    
+    if "admin_name" not in session:
         return "unauthorized", 401
+    if not comment_id:
+        return "Bad Request: Comment ID is missing", 400
 
+    author_query = text("""
+        SELECT u.username 
+        FROM comments c 
+        JOIN users u ON c.user_id = u.id 
+        WHERE c.id = :comment_id
+    """)
+    author_result = db.session.execute(author_query, {'comment_id': comment_id}).fetchone()
+
+    if author_result is None:
+        return "Comment not found", 404
+
+    author_username = author_result[0]
+
+    delete_query = text("DELETE FROM comments WHERE id = :comment_id")
+    db.session.execute(delete_query, {'comment_id': comment_id})
+    db.session.commit()
+    
+    # כתוב ללוג
+    write_log(f"ADMIN has deleted {author_username}'s comment")
+    
+    return f"Comment by {author_username} was successfully deleted."
 
 @app.route('/admin_panal', methods=['POST', 'GET'])
 def admin_panal():
     if 'admin_name' not in session:
-       return 404
-
+       return "Unauthorized",401
+    
     admin_username = session['admin_name']
     admin_info_query = text("SELECT * FROM admins WHERE name = :name")
     admin_info = db.session.execute(admin_info_query, {"name": admin_username}).fetchone()

@@ -8,6 +8,38 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        /* Slideshow container - NOW FULL WIDTH */
+        .slideshow-container {
+            width: 100%; /* Fills the parent container's width */
+            position: relative;
+            margin: 0 auto 50px auto; /* Centered with margin at the bottom */
+            overflow: hidden;
+        }
+
+        /* Each slide */
+        .mySlides {
+            display: none;
+        }
+
+        .mySlides img {
+            width: 100%;
+            vertical-align: middle;
+            /* Ken Burns animation removed */
+        }
+
+        /* Fade animation for slide transition */
+        .fade {
+            animation-name: fade;
+            animation-duration: 1.5s;
+        }
+
+        @keyframes fade {
+            from { opacity: .4 }
+            to { opacity: 1 }
+        }
+    </style>
 </head>
 <body>
     <div class="scanlines-overlay"></div>
@@ -32,6 +64,27 @@
             <a href="{{ url_for('login_page') }}"> Login</a>
         </nav>
 
+        <div class="slideshow-container">
+            <div class="mySlides fade">
+              <img src="static/imgs/Bannar/Bannr1.png" alt="Vintage Computer 1">
+            </div>
+            
+            <div class="mySlides fade">
+              <img src="static/imgs/Bannar/Bannr2.png" alt="Vintage Computer 2">
+            </div>
+            
+            <div class="mySlides fade">
+              <img src="static/imgs/Bannar/Bannr3.png" alt="Vintage Computer 3">
+            </div>
+            
+            <div class="mySlides fade">
+                <img src="static/imgs/Bannar/Bannr4.png" alt="Vintage Computer 4">
+            </div>
+		
+	   <div class="mySlides fade">
+                <img src="static/imgs/Bannar/Bannr5.png" alt="Vintage Computer 4">
+            </div>
+        </div>
         <main>
             {% if security_question %}
             <div class="security-question-box">
@@ -63,5 +116,21 @@
         </footer>
     </div>
 
+    <script>
+        let slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+          let i;
+          let slides = document.getElementsByClassName("mySlides");
+          for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+          }
+          slideIndex++;
+          if (slideIndex > slides.length) {slideIndex = 1}
+          slides[slideIndex-1].style.display = "block";
+          setTimeout(showSlides, 5000); // Kept the 5 second delay as you set it
+        }
+    </script>
 </body>
 </html>

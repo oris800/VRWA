@@ -1,7 +1,7 @@
 /*
-  ========================================
-  Modern Shopping Cart Style
-  ========================================
+  ======================================================
+  Modern Order Confirmation & Checkout Style
+  ======================================================
 */
 
 /* 1. Google Font Import & Color Palette
@@ -12,7 +12,8 @@
     --color-1: #6AAFB4; /* Teal Accent */
     --color-2: #6A8AB4; /* Dusty Blue */
     --color-3: #6F6AB4; /* Purplish Blue */
-    --color-danger: #e74c3c; /* Red for destructive actions */
+    --color-success: #2ecc71; /* Green for success states */
+    --color-danger: #e74c3c;  /* Red for errors */
 
     --border-radius: 16px;
     --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
@@ -37,7 +38,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1000px;
+    max-width: 900px;
     margin: 0 auto 20px auto;
     background: rgba(255, 255, 255, 0.95);
     padding: 15px 25px;
@@ -46,8 +47,16 @@ body {
 }
 
 .top-bar .user-info {
-    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
     font-weight: 500;
+}
+
+.header-icon {
+    width: 24px;
+    height: 24px;
 }
 
 .back-to-shop-btn {
@@ -62,6 +71,7 @@ body {
     font-weight: 500;
     transition: all 0.3s ease;
 }
+
 .back-to-shop-btn:hover {
     background-color: #587ab1;
     transform: translateY(-2px);
@@ -76,61 +86,98 @@ body {
 .message {
     padding: 15px 20px;
     margin: 0 auto 20px auto;
-    max-width: 960px;
+    max-width: 860px;
     border-radius: var(--border-radius);
     font-weight: 500;
     text-align: center;
 }
+
 .message.message-error { background-color: #f8d7da; color: #721c24; }
 .message.message-info { background-color: #d1ecf1; color: #0c5460; }
 
-
-/* 4. Main Cart Container
+/* 4. Main Checkout Container
 -------------------------------------------------- */
-.cart-container {
+.checkout-container {
     background: rgba(255, 255, 255, 0.95);
-    max-width: 1000px;
+    max-width: 900px;
     margin: auto;
     border-radius: var(--border-radius);
-    padding: 25px 35px;
+    padding: 30px 40px;
     box-shadow: var(--shadow);
 }
 
-.cart-container h1 {
+/* 5. Order Completion Section
+-------------------------------------------------- */
+.order-completion {
     text-align: center;
-    font-size: 2.2rem;
-    margin-top: 0;
+    padding-bottom: 25px;
     margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: white;
+    background-color: var(--color-success);
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 15px auto;
+}
+
+.order-completion h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0 0 5px 0;
+}
+
+.order-completion p {
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0;
+}
+
+/* 6. Order Summary Section
+-------------------------------------------------- */
+.order-summary h3, .order-summary h4 {
+    font-size: 1.4rem;
     color: var(--color-3);
-    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 15px;
 }
 
-.cart-content {
-    background-color: transparent;
-    border: none;
-    padding: 0;
-    margin-bottom: 20px;
+.order-summary h4 {
+    font-size: 1.2rem;
+    margin-top: 25px;
+    color: #444;
 }
 
-/* 5. Individual Item Card
+.details-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 15px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+}
+
+.details-grid p {
+    margin: 0;
+}
+
+/* 7. Ordered Items List
 -------------------------------------------------- */
 .item-card {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
     background-color: #fff;
     border-radius: 12px;
     padding: 15px;
     margin-bottom: 15px;
-    color: #333;
     border: 1px solid #eee;
-}
-
-.item-product {
-    display: flex;
-    align-items: center;
-    flex: 1; /* Allow it to take up available space */
-    gap: 15px;
 }
 
 .product-image {
@@ -140,113 +187,70 @@ body {
     object-fit: cover;
 }
 
-.item-details p { margin: 0; }
-.item-details .product-name { font-weight: 500; }
-.item-details .product-price { color: #777; font-size: 0.9em; }
-
-/* 6. Quantity, Price & Remove
--------------------------------------------------- */
-.item-quantity-controls {
-    display: flex;
-    align-items: center;
+.item-details {
+    flex-grow: 1; /* Take up available space */
 }
 
-.quantity-btn {
-    background-color: #f0f0f0;
-    border: none;
-    color: #555;
+.item-details p {
+    margin: 0;
+}
+
+.item-name {
+    font-weight: 500;
+}
+
+.item-meta {
+    color: #777;
+    font-size: 0.9em;
+}
+
+.item-quantity {
     font-size: 1rem;
-    cursor: pointer;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    transition: background-color 0.2s;
-}
-.quantity-btn:hover { background-color: #e0e0e0; }
-.item-quantity { font-size: 1.1rem; font-weight: 500; margin: 0 10px; }
-.item-total { font-weight: 500; width: 80px; text-align: right; }
-
-.remove-btn {
-    width: 35px;
-    height: 35px;
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23888'%3E%3Cpath d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 20px;
-}
-.remove-btn:hover {
-    background-color: var(--color-danger);
-    border-color: var(--color-danger);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z'/%3E%3C/svg%3E");
-}
-
-
-/* 7. Cart Summary & Checkout
--------------------------------------------------- */
-.cart-summary {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f9f9f9;
-    border-radius: 12px;
-    padding: 15px 25px;
-    border-top: 1px solid #eee;
-}
-
-.summary-details {
-    font-size: 1.3rem;
     font-weight: 500;
-    color: #333;
-}
-.summary-total { font-weight: 700; color: var(--color-3); }
-
-.order-btn {
-    background-color: var(--color-1);
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 500;
-    padding: 12px 30px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s;
-}
-.order-btn:hover {
-    background-color: #5a9a9e;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-}
-
-
-/* 8. Empty Cart Styles
--------------------------------------------------- */
-.empty-cart {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 300px;
-    color: #888;
+    color: #555;
+    min-width: 50px;
     text-align: center;
 }
-.empty-cart-icon {
-    width: 60px;
-    height: auto;
-    margin-bottom: 20px;
-    opacity: 0.5;
+
+.item-total {
+    font-weight: 500;
+    width: 80px;
+    text-align: right;
+    font-size: 1.1rem;
 }
-.empty-cart h2 {
-    font-size: 1.8em;
-    margin-bottom: 10px;
-    color: #555;
-}
-.empty-cart p {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
+
+/* 8. Responsive Design
+-------------------------------------------------- */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .top-bar {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .checkout-container {
+        padding: 20px;
+    }
+
+    .item-card {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .item-details {
+        width: calc(100% - 80px); /* Full width minus image width and gap */
+    }
+
+    .item-quantity, .item-total {
+        width: 50%;
+        text-align: left;
+        padding-left: 80px; /* Indent to align with details */
+    }
+    
+    .item-total {
+        text-align: right;
+    }
 }
