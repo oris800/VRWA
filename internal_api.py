@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@10.0.0.15/app'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@10.0.0.21/app'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -47,12 +47,6 @@ def dogs():
 def qun():
     return render_template("qun.html")
 
-import os
-import requests
-from flask import request, Flask
-
-# This is a placeholder for your Flask app instance
-app = Flask(__name__)
 
 @app.route('/qun/Upload-update')
 def qun_update():
@@ -93,70 +87,29 @@ def qun_update():
 
         return "Invalid token or order ID.", 403
 
-@app.route('/add', methods=['POST', 'GET'])
-def add():
-    user_name = request.args.get('user')
-    cash = request.args.get('cash')
-    secret_token = request.args.get('token')
-
-    if user_name == None and cash == None and secret_token == None:
-        return "missiong parmmaters: user,cash,token"
-
-    user_id = db.session.execute(text(f"SELECT * FROM users WHERE username = '{user_name}'")).fetchone()
-    
-    user_cash = user_id[5]
-
-    if user_id == None:
-        return "user has not found"
-    if secret_token != "4_2-d2l133r-m4-J8a13aG9-43-15Hk_3-H9-M43M_4_":
-        return "secret token not match"
-
-
-    if secret_token == "4_2-d2l133r-m4-J8a13aG9-43-15Hk_3-H9-M43M_4_":
-       
-            print(user_cash + int(cash))
-            db.session.execute(text(f"UPDATE users SET money = money + {int(cash)} WHERE id = {user_id[0]}"))
-            db.session.commit()
-            return f"add {cash} to user: {user_name}"
-        #else:
-            #return "user cant have more than: " + str(100000)
-    else:
-        return "secret token not match"
-    
-
 
 @app.route('/qun/buy', methods=['POST', 'GET'])
 def buy_qun():
-    user_name = request.args.get('user')
-    secret_token = request.args.get('token')
+
+    dev_token = request.args.get('dev_token')
     
-    user_row = db.session.execute(text(f"SELECT * FROM users WHERE username = '{user_name}'")).fetchone()
+    if dev_token == None:
+        return "missiong parmmaters: dev_token"
+    
+    token_is_vaild =  db.session.execute(text("SELECT dev_token FROM users WHERE dev_token = :dev_token"), {"dev_token": dev_token}).fetchone()
+    if token_is_vaild != None:
+        
+        dev_info = db.session.execute(text("SELECT * FROM users WHERE dev_token = :dev_token"), {"dev_token": dev_token}).fetchone()
+        dev_have = db.session.execute(text("SELECT * FROM cart_items WHERE user_id = :user_id AND product_id = 99"), {"user_id": dev_info[0]}).fetchone()
 
-    if secret_token == None and user_name == None:
-        return "missiong parmmaters: user,token"
-
-
-    if user_row is None:
-        return "user is not internal"
-
-    is_internal_user = user_row[6]
-    print(is_internal_user)
-
-    if secret_token == "4_2-d2l133r-m4-J8a13aG9-43-15Hk_3-H9-M43M_4_" and is_internal_user: 
-        user_id = db.session.execute(text(f"SELECT id FROM users WHERE username = '{user_name}'")).fetchone()
-        user_have = db.session.execute(text("SELECT * FROM cart_items WHERE user_id = :user_id AND product_id = 99"), {"user_id": user_id[0]}).fetchone()
-        if user_have == None:
-            db.session.execute(text(f"INSERT INTO cart_items (user_id , product_id) VALUES({user_id[0]},99) "))
+        if dev_have == None:
+            db.session.execute(text(f"INSERT INTO cart_items (user_id , product_id) VALUES({dev_info[0]},99) "))
             db.session.commit()
-            return f"add to cart to user: {user_name}"
+            return f"add to cart to {dev_info[1]}"
         else:
             return "you cant buy item twise"
     else:
-        return "secret token not match"
-    
-
-
-
+        return "dev token not vaild"
 
     
 

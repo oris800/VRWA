@@ -4,13 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
-    <!-- The link to the CSS file remains the same -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .dev-badge {
+            display: inline-block;
+            background-color: #34db66;
+            color: #ffffff;
+            padding: 4px 8px;
+            font-size: 0.8em;
+            font-weight: bold;
+            border-radius: 12px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .dev-token-section {
+            background-color: #f0f8ff;
+            border: 1px solid #d1e7fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            word-wrap: break-word; /* Ensure long tokens don't break layout */
+        }
+        .dev-token-section h3 {
+            margin-top: 0;
+            color: #0d6efd;
+        }
+        /* Styles for the new form */
+        .dev-token-section .form-group {
+            margin-bottom: 12px;
+        }
+        .dev-token-section label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .dev-token-section input[type="text"],
+        .dev-token-section input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        .dev-token-section .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745; /* Green color for action */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .dev-token-section .submit-btn:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
     <div class="page-wrapper">
         
-        <!-- This section for displaying flashed messages is correct -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -23,7 +77,10 @@
             <header class="card-header">
                 <h1>
                     <img src="{{ url_for('static', filename='imgs/icons/user.png') }}" alt="User Icon" class="header-icon">
-                    {{ user_name }}'s Profile
+                    {{ user_name }}
+                    {% if is_dev %}
+                        <span class="dev-badge">DEV</span>
+                    {% endif %}
                 </h1>
             </header>
             
@@ -33,6 +90,36 @@
                 <p><strong>Security Question:</strong> {{ security_question }}</p>
                 <p><strong>Balance:</strong> ${{ user_cash }}</p> 
             </div>
+
+            {% if is_dev %}
+            <div class="dev-token-section">
+                <h3>Developer Information</h3>
+                <p><strong>Your Developer Token:</strong></p>
+                <code>{{ dev_token }}</code>
+            </div>
+
+            <div class="dev-token-section">
+                <h3>טען כסף למשתמשים (Load Money for Users)</h3>
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="target_username">Target Username:</label>
+                        <input type="text" id="target_username" name="target_username" placeholder="Enter username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount:</label>
+                        <input type="number" id="amount" name="amount" min="0.01" step="0.01" placeholder="Enter amount" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dev_code">dev code:</label>
+                        <input type="password" id="dev_code" name="dev_code" placeholder="Enter dev code" required>
+                    </div>
+
+                    <button type="submit" name="load_money" value="true" class="submit-btn">Load Money</button>
+                </form>
+            </div>
+            {% endif %}
             
             <hr>
 
@@ -54,34 +141,28 @@
                         <input type="password" id="confirm_password" name="confirm_password" required>
                     </div>
 
-                    <!-- This hidden input passes the encoded username -->
                     <input type="hidden" name="uid" value="{{ user_name_encoded }}">
-
-                    <button type="submit" class="submit-btn">Update Password</button>
+                    
+                    <button type="submit" name="change_password" value="true" class="submit-btn">Update Password</button>
                 </form>
             </details>
 
             <hr>
 
-            <!-- Navigation Buttons with Corrected url_for() endpoints -->
             <div class="navigation-buttons">
-                <!-- CORRECTED: Endpoint for '/' is the 'home' function -->
                 <a href="{{ url_for('home') }}" class="nav-button">
                     <img src="{{ url_for('static', filename='imgs/icons/user-interface.png') }}" alt="Main Page Icon" class="button-icon">
                     Main Page
                 </a>
-                <!-- CORRECTED: Endpoint for '/products' is the 'products_page' function -->
                 <a href="{{ url_for('products_page') }}" class="nav-button">
                     Products
                 </a>
-                <!-- CORRECT: Endpoint for '/cart' is the 'cart' function -->
                 <a href="{{ url_for('cart') }}" class="nav-button">
                     <img src="{{ url_for('static', filename='imgs/icons/shopping-cart.png') }}" alt="Cart Icon" class="button-icon">
                     Shopping Cart
                 </a>
             </div>
 
-            <!-- CORRECT: Endpoint for '/logout' is the 'logout' function -->
             <a href="{{ url_for('logout') }}" class="logout-button">
                 <img src="{{ url_for('static', filename='imgs/icons/enter.png') }}" alt="Logout Icon" class="button-icon">
                 Logout

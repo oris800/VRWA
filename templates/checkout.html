@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Completed</title>
     <!-- Link to the new CSS file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout_style.css') }}">
-</head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
 <body>
 
     <header class="top-bar">
@@ -41,6 +40,7 @@
         <div class="order-summary">
             <h3>Order Details</h3>
             <div class="details-grid">
+                <p><strong>fun fact: </strong></p><p>{{ fan_fact }}</p>
                 <p><strong>Order ID:</strong></p><p>{{ order_id }}</p>
                 <p><strong>Total Amount:</strong></p><p>${{ "%.2f"|format(total) }}</p>
             </div>

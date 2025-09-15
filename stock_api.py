@@ -15,6 +15,12 @@ possible_ids.remove(2)
 out_of_stock_ids = random.sample(possible_ids, 5)
 
 
+def disable_all_stock():
+    out_of_stock_ids.clear()
+    for y in range(41): 
+        out_of_stock_ids.append(y)
+
+
 
 @app.route('/chackstock', methods=['GET'])
 def chackstock():
@@ -25,6 +31,9 @@ def chackstock():
     else:
         return "item is in stock"
  
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8200,host="0.0.0.0")

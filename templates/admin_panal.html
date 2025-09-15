@@ -4,7 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_panal_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* Optional: Some basic styling for the new section */
+        .dev-management h2 {
+            margin-bottom: 15px;
+        }
+        .dev-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .dev-item .dev-name {
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        .dev-item form {
+            display: flex;
+            gap: 10px;
+            flex-grow: 1;
+        }
+        .dev-item input[type="password"] {
+            flex-grow: 1;
+        }
+    </style>
 </head>
 <body>
     <main>
@@ -22,32 +49,24 @@
             {% endif %}
         {% endwith %}
         
-        <hr>
 
-        <section class="user-update">
-            <form method="POST" action="">
-                <div class="form-group">
-                    <label for="addUser">Update user to internal:</label>
-                    <input type="text" id="addUser" name="addUser" placeholder="Enter name..." required>
-                    <button type="submit">Update</button>
+        <section class="dev-management">
+            <h2>Manage Developers codes</h2>
+            {% for dev in developers %}
+                <div class="dev-item">
+                    <span class="dev-name">{{ dev.username }}</span>
+                    <form method="POST" action="">
+                        <input type="hidden" name="dev_username" value="{{ dev.username }}">
+                        
+                        <input type="password" name="new_dev_code" placeholder="Enter dev code..." required>
+                        <button type="submit" name="change_password">Change dev code</button>
+                    </form>
                 </div>
-            </form>
+            {% else %}
+                <p>No developers found.</p>
+            {% endfor %}
         </section>
 
-        <hr>
-
-        <section class="log-viewer">
-            <h2>Log File Viewer</h2>
-            <form method="POST" action="">
-                <input type="hidden" name="fp" value="log.txt">
-                <div class="form-group">
-                    <button type="submit" style="width: 100%;">Show Log</button>
-                </div>
-            </form>
-            <textarea readonly>{{ log_content }}</textarea>
-        </section>
-
-        <hr>
 
         <div class="logout-container">
             <a href="{{ url_for('logout') }}" class="logout-button">
