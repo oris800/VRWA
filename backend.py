@@ -187,20 +187,15 @@ def user_page():
     if "admin_name" in session:
         return redirect(url_for('admin_panal'))
     if "username" in session:
-        dev_token = None
         is_dev = False
         username = session["username"]  
         user_info_query = "SELECT * FROM users WHERE username = :username"
         user_info = db.session.execute(text(user_info_query), {'username': username}).fetchone()
         if user_info[7] == True:
-            dev_token = user_info[8]
             is_dev = True
         else:
-            dev_token = None
             is_dev = False
 
-
-        #INJCTION
         if request.method == 'POST':
  
             if request.form.get("load_money"):
@@ -217,8 +212,6 @@ def user_page():
                 }
                 ).fetchone()
 
-  
-                
                 if dev_password:
                     dose_user_exits = db.session.execute(text("SELECT * FROM users WHERE username = :username"), {'username': target_username}).fetchone()
                     if dose_user_exits:
@@ -238,6 +231,29 @@ def user_page():
                     flash("Incorrect dev code. If you have forgotten your developer code, please contact the admin and ask him to reset your dev code from his admin panel.", "error")
                     return redirect(url_for('user_page'))    
             
+            elif request.form.get("show_token"):
+                dev_password_input = request.form.get("dev_code")
+                hashed_input_dev_code = MD5.new(dev_password_input.encode()).hexdigest()
+
+                dev_user_check = db.session.execute(
+                    text("SELECT dev_password FROM users WHERE username = :name AND dev_password = :dev_code"),
+                    {'name': session["username"], 'dev_code': hashed_input_dev_code}
+                ).fetchone()
+
+                if dev_user_check:
+                    revealed_token = user_info[8]
+                    return render_template('user.html',
+                                           user_name=user_info[1],
+                                           user_id=user_info[0],
+                                           security_question=user_info[3],
+                                           user_cash=user_info[5], 
+                                           user_name_encoded=caesar_cipher(username,5),
+                                           is_dev=is_dev,
+                                           revealed_dev_token=revealed_token)
+                else:
+                    flash("Incorrect dev code. If you have forgotten your developer code, please contact the admin and ask him to reset your dev code from his admin panel.", "error")
+                    return redirect(url_for('user_page'))
+
             elif request.form.get("change_password"):
                 
                 current_password = request.form.get('current_password')
@@ -245,15 +261,12 @@ def user_page():
                 confirm_password = request.form.get("confirm_password")
                 
                 if request.form.get("uid"):
-                #כאן מקבלים שם משתמש מוצפן
                     user_name = request.form.get("uid")
                     current_user = caesar_cipher(user_name,-5)
-
                 else:
                     return "Error uid missing "
     
                 db_password_quray = "SELECT password FROM users WHERE username = :username"
-                #INJCTION
                 db_password =  db.session.execute(text(db_password_quray), {'username': username}).fetchone()
                 if MD5.new(current_password .encode()).hexdigest() == db_password[0]:
                     if new_password == confirm_password:
@@ -261,29 +274,25 @@ def user_page():
                         db_query = "UPDATE users SET password = :password WHERE username = :username"
                         db.session.execute(text(db_query), {'password': hashed_new_password, 'username': current_user})
                         db.session.commit()
-
                         flash("Password reset successfully","success")
                         return redirect(url_for('user_page'))
-                        #return render_template('user.html',user_name=user_info[1],user_id=user_info[0],security_question=user_info[3],user_cash=user_info[5], user_name_encoded=caesar_cipher(username,5),message=message)
                     else:
-
                         flash("Passwords do not match","error")
                         return redirect(url_for('user_page'))
-                    #return render_template('user.html',user_name=user_info[1],user_id=user_info[0],security_question=user_info[3],user_cash=user_info[5], user_name_encoded=caesar_cipher(username,5),message=message)
                 else:
                         flash("current password not match","error")
                         return redirect(url_for('user_page'))
-                        #return render_template('user.html',user_name=user_info[1],user_id=user_info[0],security_question=user_info[3],user_cash=user_info[5], user_name_encoded=caesar_cipher(username,5),message=message)
            
-        
-        return render_template('user.html',user_name=user_info[1],user_id=user_info[0],security_question=user_info[3],user_cash=user_info[5], user_name_encoded=caesar_cipher(username,5),
-            is_dev=is_dev,
-            dev_token=dev_token)
+        return render_template('user.html',
+                               user_name=user_info[1],
+                               user_id=user_info[0],
+                               security_question=user_info[3],
+                               user_cash=user_info[5], 
+                               user_name_encoded=caesar_cipher(username,5),
+                               is_dev=is_dev,
+                               revealed_dev_token=None)
     else:
         return "you are not authorized user, please <a href='/login'>login</a>",401
-
-
-
 
 @app.route('/logout')
 def logout():
@@ -713,8 +722,8 @@ def admin_panal():
                 if dose_user_dev:
                     hashed_password = MD5.new(new_dev_code.encode()).hexdigest()
                     
-                    update_query = text("UPDATE users SET password = :password WHERE username = :username")
-                    db.session.execute(update_query, {'password': hashed_password, 'username': dev_username_to_update})
+                    update_query = text("UPDATE users SET dev_password = :dev_password WHERE username = :username")
+                    db.session.execute(update_query, {'dev_password': hashed_password, 'username': dev_username_to_update})
                     db.session.commit()
                     flash(f"dev code for {dev_username_to_update} was updated successfully!", 'success')
                 else:
