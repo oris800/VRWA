@@ -61,6 +61,29 @@
         .dev-token-section .submit-btn:hover {
             background-color: #218838;
         }
+
+        /* --- NEW STYLE FOR QUANTUM BUTTON --- */
+        .quantum-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: linear-gradient(45deg, #4f00bc, #9d00c6);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-sizing: border-box;
+        }
+        .quantum-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(128, 0, 255, 0.4);
+        }
+        /* --- END OF NEW STYLE --- */
+
     </style>
 </head>
 <body>
@@ -157,6 +180,11 @@
                     <button type="submit" name="change_password" value="true" class="submit-btn">Update Password</button>
                 </form>
             </details>
+
+            {% if owns_quantum_computer %}
+                <a href="/quantum_control_panel" class="quantum-button">Quantum Computer Management Console</a>
+            {% endif %}
+
 
             <hr>
 

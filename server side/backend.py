@@ -13,10 +13,17 @@ app = Flask(__name__)
 
 app.secret_key = "super-secret-key"
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@db/app'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@10.0.0.21:3306/app'
+db_user = os.getenv('DB_USER', 'retro_user')
+db_password = os.getenv('DB_PASSWORD', '1234')
+db_host = os.getenv('DB_HOST', 'localhost') #
+db_name = os.getenv('DB_NAME', 'app')
+db_port = 3306 
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
 
 @app.route('/robots.txt')
 def robots():

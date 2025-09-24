@@ -13,14 +13,14 @@ app = Flask(__name__)
 
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@10.0.0.21/app'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@10.0.0.21:3316/app'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
 @app.route('/', methods=['GET'])
 def root():
-    return "Welcome! if you are not a part of the dev team plz go wwy"
+    return "Welcome. Please be advised that this area is for authorized Development Team personnel. Unauthorized access is strictly prohibited."
 
 @app.route('/dogs', methods=['POST', 'GET'])
 def dogs():
@@ -48,45 +48,6 @@ def qun():
     return render_template("qun.html")
 
 
-@app.route('/qun/Upload-update')
-def qun_update():
-
-    secret_token = request.args.get('token')
-    quntom_computer_order_id = request.args.get('quntutom_order_id')
-    firmware_url = request.args.get('firmware_url')
-
-    missing_params = []
-    if not secret_token:
-        missing_params.append('token')
-    if not quntom_computer_order_id:
-        missing_params.append('quntutom_order_id')
-    if not firmware_url:
-        missing_params.append('firmware_url')
-
-    if missing_params:
-        return f"Missing required parameters: {', '.join(missing_params)}", 400
-
-
-    if quntom_computer_order_id == "d86c8fa07147ddd1fc551418b81b494f" and secret_token == "4_2-d2l133r-m4-J8a13aG9-43-15Hk_3-H9-M43M_4_":
-        try:
-            response = requests.get(firmware_url)
-            response.raise_for_status()
-            
-            with open("/tmp/update.sh", "wb") as f:
-                f.write(response.content)
-            
-            os.chmod("/tmp/update.sh", 0o755)
-            os.system("bash /tmp/update.sh")
-            
-            return "Update process initiated."
-        except requests.exceptions.RequestException as e:
-            return f"Failed to fetch firmware from URL: {e}", 500
-        except Exception as e:
-            return f"Failed to run update: {e}", 500
-    else:
-
-        return "Invalid token or order ID.", 403
-
 
 @app.route('/qun/buy', methods=['POST', 'GET'])
 def buy_qun():
@@ -103,15 +64,25 @@ def buy_qun():
         dev_have = db.session.execute(text("SELECT * FROM cart_items WHERE user_id = :user_id AND product_id = 99"), {"user_id": dev_info[0]}).fetchone()
 
         if dev_have == None:
-            db.session.execute(text(f"INSERT INTO cart_items (user_id , product_id) VALUES({dev_info[0]},99) "))
+
+            db.session.execute(
+                text("INSERT INTO cart_items (user_id, product_id) VALUES(:user_id, 99)"),
+                {'user_id': dev_info[0]}
+            )
+            
+
+            db.session.execute(
+                text("UPDATE users SET does_own_qun = 1 WHERE username = :username"),
+                {'username': dev_info[0]}
+            )
+            
             db.session.commit()
-            return f"add to cart to {dev_info[1]}"
+            
+            return f"Add quantum computer to dev {dev_info[0]} cart"
         else:
-            return "you cant buy item twise"
+            return "This item is already in your cart."
     else:
         return "dev token not vaild"
-
-    
 
 
 if __name__ == "__main__":

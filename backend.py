@@ -7,20 +7,27 @@ import requests
 from Crypto.Hash import MD5,MD2
 import os
 import time
+import contextlib
+import traceback
+import io
 
 
 app = Flask(__name__)
 
 app.secret_key = "super-secret-key"
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@db/app'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@10.0.0.21:3306/app'
+db_user = os.getenv('DB_USER', 'retro_user')
+db_password = os.getenv('DB_PASSWORD', '1234')
+db_host = os.getenv('DB_HOST', 'localhost') #
+db_name = os.getenv('DB_NAME', 'app')
+db_port = 3306 
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-@app.route('/robots.txt')
-def robots():
-    return send_from_directory(os.path.join(app.root_path, ''), 'robots.txt')
+
 
 
 def caesar_cipher(text, shift):
@@ -41,6 +48,15 @@ def caesar_cipher(text, shift):
     return result
 
 # ... כאן מתחילה הפונקציה user_page ...
+
+@app.route('/robots.txt')
+def robots_txt():
+
+    try:
+        return send_from_directory(app.root_path, 'robots.txt')
+    except FileNotFoundError:
+
+        return "File not found", 404
 
 @app.route('/')
 def home():
@@ -187,6 +203,8 @@ def user_page():
     if "admin_name" in session:
         return redirect(url_for('admin_panal'))
     if "username" in session:
+        username = session["username"]  
+        user_owns_quantum = db.session.execute(text("SELECT does_own_qun FROM users WHERE username = :username"), {'username': username}).scalar()
         is_dev = False
         username = session["username"]  
         user_info_query = "SELECT * FROM users WHERE username = :username"
@@ -197,7 +215,7 @@ def user_page():
             is_dev = False
 
         if request.method == 'POST':
- 
+            
             if request.form.get("load_money"):
                 target_username = request.form.get("target_username")
                 amount = request.form.get("amount")
@@ -215,21 +233,32 @@ def user_page():
                 if dev_password:
                     dose_user_exits = db.session.execute(text("SELECT * FROM users WHERE username = :username"), {'username': target_username}).fetchone()
                     if dose_user_exits:
-                        if int(amount) < 200:
-                            db.session.execute(text("UPDATE users SET money = money + :amount WHERE username = :username"), {'amount': int(amount), 'username': target_username})
-                            time.sleep(1.5)
-                            db.session.commit()
-                            flash(f"הסכום ${amount} הועבר בהצלחה למשתמש {dose_user_exits[1]}.", "success")
-                            return redirect(url_for('user_page'))   
+
+                        current_balance_query = text("SELECT money FROM users WHERE username = :username")
+                        current_balance = db.session.execute(current_balance_query, {'username': target_username}).fetchone()[0]
+
+                        if int(amount) <= 200:
+                            if current_balance + int(amount) <= 400:
+
+                                time.sleep(1.5)
+
+                                db.session.execute(text("UPDATE users SET money = money + :amount WHERE username = :username"), {'amount': int(amount), 'username': target_username})
+                                db.session.commit()
+                                
+                                flash(f"The amount of ${amount} was successfully transferred to user {dose_user_exits[1]}.", "success")
+                                return redirect(url_for('user_page'))
+                            else:
+                                flash("This transaction would exceed the user's total balance limit of $400.", "error")
+                                return redirect(url_for('user_page'))
                         else:
-                            flash("amount cant be more than 200","error")
-                            return redirect(url_for('user_page'))       
+                            flash("amount cant be more than 200", "error")
+                            return redirect(url_for('user_page'))
                     else:
-                        flash("user not found","error")
-                        return redirect(url_for('user_page'))       
+                        flash("user not found", "error")
+                        return redirect(url_for('user_page'))
                 else:
                     flash("Incorrect dev code. If you have forgotten your developer code, please contact the admin and ask him to reset your dev code from his admin panel.", "error")
-                    return redirect(url_for('user_page'))    
+                    return redirect(url_for('user_page'))
             
             elif request.form.get("show_token"):
                 dev_password_input = request.form.get("dev_code")
@@ -249,7 +278,7 @@ def user_page():
                                            user_cash=user_info[5], 
                                            user_name_encoded=caesar_cipher(username,5),
                                            is_dev=is_dev,
-                                           revealed_dev_token=revealed_token)
+                                           revealed_dev_token=revealed_token, owns_quantum_computer=user_owns_quantum)
                 else:
                     flash("Incorrect dev code. If you have forgotten your developer code, please contact the admin and ask him to reset your dev code from his admin panel.", "error")
                     return redirect(url_for('user_page'))
@@ -282,7 +311,8 @@ def user_page():
                 else:
                         flash("current password not match","error")
                         return redirect(url_for('user_page'))
-           
+        print(user_owns_quantum)
+
         return render_template('user.html',
                                user_name=user_info[1],
                                user_id=user_info[0],
@@ -290,9 +320,10 @@ def user_page():
                                user_cash=user_info[5], 
                                user_name_encoded=caesar_cipher(username,5),
                                is_dev=is_dev,
-                               revealed_dev_token=None)
+                               revealed_dev_token=None, owns_quantum_computer=user_owns_quantum)
     else:
         return "you are not authorized user, please <a href='/login'>login</a>",401
+
 
 @app.route('/logout')
 def logout():
@@ -617,6 +648,7 @@ def chackout():
             order_id = MD5.new(order_id.encode()).hexdigest()
         elif Sorder_id == 99:
             order_id = "qun_computer"
+            db.session.execute(text("UPDATE users SET does_own_qun = 1 WHERE id = :id"), {'id': userid})
             order_id = MD5.new(order_id.encode()).hexdigest()
         
 
@@ -735,5 +767,59 @@ def admin_panal():
                            developers=devs_from_db)
 
 
+def create_sandbox():
+
+    restricted_globals = {
+        "__builtins__": {
+            "print": print,
+            "range": range,
+            "len": len,
+            "str": str,
+            "int": int,
+            "float": float,
+            "list": list,
+            "dict": dict,
+            "True": True,
+            "False": False,
+            "None": None
+        }
+    }
+    return restricted_globals
+
+@app.route('/quantum_control_panel')
+def quantum_panel():
+    if db.session.execute(text("SELECT does_own_qun FROM users WHERE username = :username"), {'username': session.get('username', '')}).fetchone()[0] != True:
+        return "you need to buy the quantum computer first!", 403
+    else:
+        return render_template('quantum_control_panel.html', output="Awaiting command...")
+
+@app.route('/quantum_run', methods=['POST'])
+def quantum_run():
+    if db.session.execute(text("SELECT does_own_qun FROM users WHERE username = :username"), {'username': session.get('username', '')}).fetchone()[0] != True:
+        return "you need to buy the quantum computer first!", 403
+    else:
+        code = request.form.get('code', '')
+        output_buffer = io.StringIO()
+
+        final_output = "Execution finished with no output."
+
+        try:
+            sandbox_globals = create_sandbox()
+
+            with contextlib.redirect_stdout(output_buffer), contextlib.redirect_stderr(output_buffer):
+                exec(code, sandbox_globals)
+            
+
+            result = output_buffer.getvalue()
+            if result:
+                final_output = result
+
+        except Exception:
+
+            final_output = "Execution Error: Invalid syntax or restricted operation."
+            
+    return render_template('quantum_control_panel.html', output=final_output)
+
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5000,host="0.0.0.0")
+    app.run(debug=True, port=8080,host="0.0.0.0")

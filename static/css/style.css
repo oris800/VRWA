@@ -506,3 +506,78 @@ form {
     width: 24px;
     height: 24px;
 }
+
+/*
+ * General Rules: Basic settings shared across all pages
+ */
+ :root {
+    --primary-color: #3f51b5;
+    --primary-dark: #303f9f;
+    --accent-color: #ffa640;
+    --background-color: #f4f6f9;
+    --text-color: #333;
+    --light-text-color: #f4f6f9;
+    --card-background: #fff;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --error-color: #dc3545;
+    --success-color: #28a745;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+.page-wrapper, .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2, h3, h4 {
+    color: var(--primary-dark);
+    margin-top: 0;
+}
+
+/*
+ * General Components: Headers, Buttons, Forms, Messages
+ */
+.top-bar, .main-header {
+    background-color: var(--primary-color);
+    color: var(--light-text-color);
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--box-shadow);
+    flex-wrap: wrap;
+}
+
+.main-header .subtitle {
+    font-family: 'Press Start 2P', 'VT323', monospace;
+    text-shadow: 2px 2px 0 #000;
+    font-size: 1.2rem;
+}
+
+/* ... (all of your other CSS rules remain exactly the same) ... */
+
+/*
+ * Specific styles for the Quantum Panel Console
+ */
+.console-output {
+    background-color: #2c3e50; /* Dark background */
+    color: #2ecc71; /* Green text, like a terminal */
+    font-family: 'VT323', monospace;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    min-height: 150px;
+    white-space: pre-wrap; /* Preserve whitespace and wrap long lines */
+    word-wrap: break-word;
+    font-size: 1.1rem;
+    border: 1px solid var(--primary-dark);
+}
