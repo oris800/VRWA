@@ -19,9 +19,9 @@ The application includes the following features:
 
 ## 🛠️ Tech Stack
 
-* **Backend:** Python 3, Flask
-* **Database:** MySQL
-* **Infrastructure:** Docker, Docker Compose
+* **Backend:** Python 3, Flask 🐍
+* **Database:** MySQL ⛁
+* **Infrastructure:** Docker, Docker Compose 🐋
 
 ---
 
