@@ -1,4 +1,4 @@
-# RetroStore: A Multi-Stage Web Security CTF
+# VRWA [vulnerable retro web app] : A Multi-Stage Web Security CTF
 
 Welcome to RetroStore, a fully functional e-commerce web application.
 I built this project from the ground up to implement and demonstrate a wide variety of security vulnerabilities in a realistic environment. This isn't just a collection of bugs, but a complete offensive campaign.
