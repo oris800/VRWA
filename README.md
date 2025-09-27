@@ -50,7 +50,7 @@ Think you have what it takes?
 
 To run this project on your local machine, please ensure you have Git, Docker, and Docker Compose installed.
 
-**Note:** These instructions are intended for a Unix-like environment (Linux, macOS, or WSL on Windows).
+**Note:** These instructions are intended for a Unix-like environment (Linux, macOS, BSD or WSL on Windows).
 
 1.  **Clone the repository:**
     ```bash
