@@ -62,6 +62,34 @@
             background-color: #218838;
         }
 
+        /* --- NEW STYLES FOR TRANSACTION LIST --- */
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .transaction-table th, .transaction-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .transaction-table th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        .revert-btn {
+            padding: 5px 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .revert-btn:hover {
+            background-color: #c82333;
+        }
+        /* --- END OF NEW STYLES --- */
+
         /* --- NEW STYLE FOR QUANTUM BUTTON --- */
         .quantum-button {
             display: block;
@@ -133,7 +161,7 @@
             </div>
 
             <div class="dev-token-section">
-                <h3>טען כסף למשתמשים (Load Money for Users)</h3>
+                <h3>Load Money for Users</h3>
                 <form method="POST">
                     <div class="form-group">
                         <label for="target_username">Target Username:</label>
@@ -142,7 +170,7 @@
 
                     <div class="form-group">
                         <label for="amount">Amount:</label>
-                        <input type="number" id="amount" name="amount" min="0.01" step="0.01" placeholder="Enter amount" required>
+                        <input type="number" id="amount" name="amount" min="1" max="200" step="1" placeholder="Enter amount (max 200)" required>
                     </div>
                     
                     <div class="form-group">
@@ -152,7 +180,36 @@
 
                     <button type="submit" name="load_money" value="true" class="submit-btn">Load Money</button>
                 </form>
-            </div>
+
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">Transaction History</h4>
+                {% if transactions %}
+                    <table class="transaction-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction[1] }}</td>
+                                <td>${{ transaction[2] }}</td>
+                                <td>
+                                    <form method="POST" style="margin: 0;">
+                                        <input type="hidden" name="transaction_id" value="{{ transaction[0] }}">
+                                        <button type="submit" name="revert_transaction" value="true" class="revert-btn">Revert</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No money loaded for any user yet.</p>
+                {% endif %}
+                </div>
             {% endif %}
             
             <hr>
@@ -182,7 +239,7 @@
             </details>
 
             {% if owns_quantum_computer %}
-                <a href="/quantum_control_panel" class="quantum-button">Quantum Computer Management Console</a>
+                <a href="/quantum_panel" class="quantum-button">Quantum Computer Management Console</a>
             {% endif %}
 
 

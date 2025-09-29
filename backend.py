@@ -1,4 +1,5 @@
 from flask import Flask, render_template,request, redirect, url_for, session,  flash,request,jsonify , Response,make_response, send_from_directory
+from datetime import datetime, timedelta, timezone
 import random 
 import requests
 from flask_sqlalchemy import SQLAlchemy
@@ -10,7 +11,8 @@ import time
 import contextlib
 import traceback
 import io
-
+import subprocess 
+import base64
 
 app = Flask(__name__)
 
@@ -30,24 +32,16 @@ db = SQLAlchemy(app)
 
 
 
-def caesar_cipher(text, shift):
-    """
-    Encrypts or decrypts text using the Caesar cipher method.
-    A positive shift encrypts, a negative shift decrypts.
-    """
-    result = ""
-    for char in text:
-        if 'a' <= char <= 'z':
-            shifted_char = chr(((ord(char) - ord('a') + shift) % 26) + ord('a'))
-            result += shifted_char
-        elif 'A' <= char <= 'Z':
-            shifted_char = chr(((ord(char) - ord('A') + shift) % 26) + ord('A'))
-            result += shifted_char
-        else:
-            result += char 
-    return result
 
-# ... כאן מתחילה הפונקציה user_page ...
+def encode_to_base64(text):
+    return base64.b64encode(text.encode('utf-8')).decode('utf-8')
+
+def decode_from_base64(encoded_text):
+    try:
+        return base64.b64decode(encoded_text.encode('utf-8')).decode('utf-8')
+    except Exception:
+        return None 
+
 
 @app.route('/robots.txt')
 def robots_txt():
@@ -72,9 +66,8 @@ def login_page():
     if request.method == 'GET':
         return render_template('login.html')
 
-    # POST request from JavaScript
     if request.method == 'POST':
-        # הפעם הנתונים מגיעים כ-form-data, לא JSON
+        
         username = request.form.get('username')
         password = request.form.get('password')
 
@@ -97,20 +90,18 @@ def login_page():
             
             return response
         else:
-            # 3. בכישלון, החזר תשובת שגיאה עם טקסט
             return 'Invalid username or password', 401
 
-#חשובבבבב יש םה באג של עקיפת מנגנון אימות קריטיק אחושרמוטה
 @app.route('/reset',methods=['POST',"GET"])
 def reset():
     if request.method == 'POST':
         username = request.form.get('username')
-        if 'new_password' in request.form and session.get('can_reset_password'): #לא מובן לי המכינקה שמונעת עקיםת שלבים לחקור בהמשך
+        if 'new_password' in request.form and session.get('can_reset_password'):
             
             new_password = request.form.get('new_password')
             confirm_password = request.form.get('confirm_password')
          
-            # במסד נתונים לא לשכוח להצפין את הסיססמה!!!!
+   
             if new_password == confirm_password:
                 hashed_new_password = MD5.new(new_password.encode()).hexdigest()
                 db_query = "UPDATE users SET password = :password WHERE username = :username"
@@ -135,7 +126,7 @@ def reset():
             #INJCTION
             result2 = db.session.execute(text(db_quary), {'username': username}).fetchone()
             
-            if result2 and submitted_answer == result2[0]:
+            if submitted_answer.lower()  == result2[0].lower():
                 
                 session['can_reset_password'] = True
                 
@@ -177,7 +168,7 @@ def reset():
 
 
 # שנה את methods ל-POST כדי שהפונקציה תוכל לקבל נתונים
-@app.route('/login/chack', methods=['POST'])
+@app.route('/login/check', methods=['POST'])
 def chack_user():
     id_from_request = request.form.get('id')
 
@@ -194,165 +185,223 @@ def chack_user():
         else:
             return "True"
     except Exception as e:
-        return "internal Error", 500
+        return "500 INTERNAL SERVER ERROR", 500
 
 
-
-@app.route('/user',methods=['GET', 'POST'])
+@app.route('/user', methods=['GET', 'POST'])
 def user_page():
     if "admin_name" in session:
         return redirect(url_for('admin_panal'))
-    if "username" in session:
-        username = session["username"]  
-        user_owns_quantum = db.session.execute(text("SELECT does_own_qun FROM users WHERE username = :username"), {'username': username}).scalar()
-        is_dev = False
-        username = session["username"]  
-        user_info_query = "SELECT * FROM users WHERE username = :username"
-        user_info = db.session.execute(text(user_info_query), {'username': username}).fetchone()
-        if user_info[7] == True:
-            is_dev = True
-        else:
-            is_dev = False
+        
+    if "username" not in session:
+        return "You are not an authorized user. Please <a href='/login'>login</a>.", 401
 
-        if request.method == 'POST':
-            
-            if request.form.get("load_money"):
-                target_username = request.form.get("target_username")
-                amount = request.form.get("amount")
-                dev_password_input = request.form.get("dev_code")
-                hashed_input_dev_code = MD5.new(dev_password_input.encode()).hexdigest()
-
-                dev_password = db.session.execute(
-                text("SELECT * FROM users WHERE username = :name and dev_password = :dev_code"),
-                {
-                    'name': session["username"],
-                    'dev_code': hashed_input_dev_code
-                }
-                ).fetchone()
-
-                if dev_password:
-                    dose_user_exits = db.session.execute(text("SELECT * FROM users WHERE username = :username"), {'username': target_username}).fetchone()
-                    if dose_user_exits:
-
-                        current_balance_query = text("SELECT money FROM users WHERE username = :username")
-                        current_balance = db.session.execute(current_balance_query, {'username': target_username}).fetchone()[0]
-
-                        if int(amount) <= 200:
-                            if current_balance + int(amount) <= 400:
-
-                                time.sleep(1.5)
-
-                                db.session.execute(text("UPDATE users SET money = money + :amount WHERE username = :username"), {'amount': int(amount), 'username': target_username})
-                                db.session.commit()
-                                
-                                flash(f"The amount of ${amount} was successfully transferred to user {dose_user_exits[1]}.", "success")
-                                return redirect(url_for('user_page'))
-                            else:
-                                flash("This transaction would exceed the user's total balance limit of $400.", "error")
-                                return redirect(url_for('user_page'))
-                        else:
-                            flash("amount cant be more than 200", "error")
-                            return redirect(url_for('user_page'))
-                    else:
-                        flash("user not found", "error")
-                        return redirect(url_for('user_page'))
-                else:
-                    flash("Incorrect dev code. If you have forgotten your developer code, please contact the admin and ask him to reset your dev code from his admin panel.", "error")
-                    return redirect(url_for('user_page'))
-            
-            elif request.form.get("show_token"):
-                dev_password_input = request.form.get("dev_code")
-                hashed_input_dev_code = MD5.new(dev_password_input.encode()).hexdigest()
-
-                dev_user_check = db.session.execute(
-                    text("SELECT dev_password FROM users WHERE username = :name AND dev_password = :dev_code"),
-                    {'name': session["username"], 'dev_code': hashed_input_dev_code}
-                ).fetchone()
-
-                if dev_user_check:
-                    revealed_token = user_info[8]
-                    return render_template('user.html',
-                                           user_name=user_info[1],
-                                           user_id=user_info[0],
-                                           security_question=user_info[3],
-                                           user_cash=user_info[5], 
-                                           user_name_encoded=caesar_cipher(username,5),
-                                           is_dev=is_dev,
-                                           revealed_dev_token=revealed_token, owns_quantum_computer=user_owns_quantum)
-                else:
-                    flash("Incorrect dev code. If you have forgotten your developer code, please contact the admin and ask him to reset your dev code from his admin panel.", "error")
-                    return redirect(url_for('user_page'))
-
-            elif request.form.get("change_password"):
-                
-                current_password = request.form.get('current_password')
-                new_password = request.form.get("new_password")
-                confirm_password = request.form.get("confirm_password")
-                
-                if request.form.get("uid"):
-                    user_name = request.form.get("uid")
-                    current_user = caesar_cipher(user_name,-5)
-                else:
-                    return "Error uid missing "
+    username = session["username"]
+    user_info = db.session.execute(text("SELECT * FROM users WHERE username = :name"), {'name': username}).fetchone()
     
-                db_password_quray = "SELECT password FROM users WHERE username = :username"
-                db_password =  db.session.execute(text(db_password_quray), {'username': username}).fetchone()
-                if MD5.new(current_password .encode()).hexdigest() == db_password[0]:
-                    if new_password == confirm_password:
-                        hashed_new_password = MD5.new(new_password.encode()).hexdigest()
-                        db_query = "UPDATE users SET password = :password WHERE username = :username"
-                        db.session.execute(text(db_query), {'password': hashed_new_password, 'username': current_user})
-                        db.session.commit()
-                        flash("Password reset successfully","success")
+    is_dev = user_info[7] == 1
+    user_owns_quantum = user_info[10] == 1
+
+    transactions = []
+    if is_dev:
+        transactions_query = text("""
+            SELECT dt.id, u.username, dt.amount 
+            FROM dev_transactions dt 
+            JOIN users u ON dt.target_user_id = u.id 
+            WHERE dt.dev_user_id = :dev_id
+        """)
+        transactions = db.session.execute(transactions_query, {'dev_id': user_info[0]}).fetchall()
+
+    if request.method == 'POST':
+        
+        if request.form.get("load_money"):
+            if not is_dev:
+                flash("You are not a developer.", "error")
+                return redirect(url_for('user_page'))
+
+            target_username = request.form.get("target_username")
+            amount = request.form.get("amount")
+            dev_password_input = request.form.get("dev_code")
+            hashed_input_dev_code = MD5.new(dev_password_input.encode()).hexdigest()
+
+            dev_password_check = db.session.execute(
+                text("SELECT * FROM users WHERE username = :name and dev_password = :dev_code"),
+                {'name': session["username"], 'dev_code': hashed_input_dev_code}
+            ).fetchone()
+
+            if dev_password_check:
+                target_user = db.session.execute(text("SELECT * FROM users WHERE username = :username"), {'username': target_username}).fetchone()
+                if target_user:
+                    existing_transaction = db.session.execute(
+                        text("SELECT id FROM dev_transactions WHERE dev_user_id = :dev_id AND target_user_id = :target_id"),
+                        {'dev_id': user_info[0], 'target_id': target_user[0]}
+                    ).fetchone()
+
+                    if existing_transaction:
+                        flash("You have already loaded money for this user. To load again, please revert the existing transaction first.", "error")
                         return redirect(url_for('user_page'))
+                    if target_user[1] == session["username"]: 
+                        flash("Error: Developers cannot load money into their own accounts.", "error")
+                        return redirect(url_for('user_page'))
+
+                    if int(amount) <= 200000:
+                     
+                            time.sleep(1.5)
+                            db.session.execute(text("UPDATE users SET money = money + :amount WHERE username = :username"), {'amount': int(amount), 'username': target_username})
+                            
+                            db.session.execute(
+                                text("INSERT INTO dev_transactions (dev_user_id, target_user_id, amount) VALUES (:dev_id, :target_id, :amount)"),
+                                {'dev_id': user_info[0], 'target_id': target_user[0], 'amount': int(amount)}
+                            )
+                            db.session.commit()
+                            
+                            flash(f"The amount of ${amount} was successfully transferred to user {target_user[1]}.", "success")
+                            return redirect(url_for('user_page'))
+
                     else:
-                        flash("Passwords do not match","error")
+                        flash("Amount can't be more than 200.", "error")
                         return redirect(url_for('user_page'))
                 else:
-                        flash("current password not match","error")
-                        return redirect(url_for('user_page'))
-        print(user_owns_quantum)
+                    flash("User not found.", "error")
+                    return redirect(url_for('user_page'))
+            else:
+                flash("Incorrect dev code. If you have forgotten your developer code, please contact the admin to reset it.", "error")
+                return redirect(url_for('user_page'))
+        
+        elif request.form.get("revert_transaction"):
+            if not is_dev:
+                flash("You are not a developer.", "error")
+                return redirect(url_for('user_page'))
+                
+            transaction_id = request.form.get("transaction_id")
+            
+            transaction_details = db.session.execute(
+                text("SELECT * FROM dev_transactions WHERE id = :t_id AND dev_user_id = :d_id"),
+                {'t_id': transaction_id, 'd_id': user_info[0]}
+            ).fetchone()
 
-        return render_template('user.html',
-                               user_name=user_info[1],
-                               user_id=user_info[0],
-                               security_question=user_info[3],
-                               user_cash=user_info[5], 
-                               user_name_encoded=caesar_cipher(username,5),
-                               is_dev=is_dev,
-                               revealed_dev_token=None, owns_quantum_computer=user_owns_quantum)
-    else:
-        return "you are not authorized user, please <a href='/login'>login</a>",401
+            if transaction_details:
+                target_user_id = transaction_details[2]
+                amount_to_revert = transaction_details[3]
+
+                db.session.execute(
+                    text("UPDATE users SET money = GREATEST(0, money - :amount) WHERE id = :user_id"),
+                    {'amount': amount_to_revert, 'user_id': target_user_id}
+                )
+                db.session.execute(
+                    text("DELETE FROM dev_transactions WHERE id = :t_id"),
+                    {'t_id': transaction_id}
+                )
+                db.session.commit()
+                flash("Transaction successfully reverted.", "success")
+                return redirect(url_for('user_page'))
+            else:
+                flash("Transaction not found or you don't have permission to revert it.", "error")
+                return redirect(url_for('user_page'))
+
+        elif request.form.get("show_token"):
+            if not is_dev:
+                flash("You are not a developer.", "error")
+                return redirect(url_for('user_page'))
+
+            dev_password_input = request.form.get("dev_code")
+            hashed_input_dev_code = MD5.new(dev_password_input.encode()).hexdigest()
+
+            dev_user_check = db.session.execute(
+                text("SELECT dev_password FROM users WHERE username = :name AND dev_password = :dev_code"),
+                {'name': session["username"], 'dev_code': hashed_input_dev_code}
+            ).fetchone()
+
+            if dev_user_check:
+                revealed_token = user_info[8]
+                user_name_encoded = encode_to_base64(username)
+                return render_template('user.html',
+                                       user_name=user_info[1],
+                                       user_id=user_info[0],
+                                       security_question=user_info[3],
+                                       user_cash=user_info[5], 
+                                       user_name_encoded=user_name_encoded,
+                                       is_dev=is_dev,
+                                       revealed_dev_token=revealed_token, 
+                                       owns_quantum_computer=user_owns_quantum,
+                                       transactions=transactions)
+            else:
+                flash("Incorrect dev code. If you have forgotten your developer code, please contact the admin to reset it.", "error")
+                return redirect(url_for('user_page'))
+
+        elif request.form.get("change_password"):
+            current_password = request.form.get('current_password')
+            new_password = request.form.get("new_password")
+            confirm_password = request.form.get("confirm_password")
+            uid_from_form = request.form.get("uid")
+
+            if not all([current_password, new_password, confirm_password, uid_from_form]):
+                flash("All password fields are required.", "error")
+                return redirect(url_for('user_page'))
+            
+            target_username = decode_from_base64(uid_from_form)
+            
+            if not target_username:
+                flash("Invalid UID format.", "error")
+                return redirect(url_for('user_page'))
+
+            db_password_query = "SELECT password FROM users WHERE username = :username"
+            db_password = db.session.execute(text(db_password_query), {'username': username}).fetchone()
+
+            if db_password and MD5.new(current_password.encode()).hexdigest() == db_password[0]:
+                if new_password == confirm_password:
+                    hashed_new_password = MD5.new(new_password.encode()).hexdigest()
+                    
+                    db_query = "UPDATE users SET password = :password WHERE username = :username"
+                    db.session.execute(text(db_query), {'password': hashed_new_password, 'username': target_username})
+                    db.session.commit()
+
+                    flash(f"Password has reset successfully.", "success")
+                    return redirect(url_for('user_page'))
+                else:
+                    flash("New passwords do not match.", "error")
+            else:
+                flash("Current password does not match.", "error")
+            
+            return redirect(url_for('user_page'))
+
+    user_name_encoded = encode_to_base64(username)
+    return render_template('user.html',
+                           user_name=user_info[1],
+                           user_id=user_info[0],
+                           security_question=user_info[3],
+                           user_cash=user_info[5], 
+                           user_name_encoded=user_name_encoded,
+                           is_dev=is_dev,
+                           revealed_dev_token=None, 
+                           owns_quantum_computer=user_owns_quantum,
+                           transactions=transactions)
 
 
 @app.route('/logout')
 def logout():
-    # בדוק אם משתמש כלשהו (רגיל או אדמין) מחובר
     if 'username' in session:
-        # שמור את שם המשתמש בצד לפני מחיקת הסשן
         username = session['username']
-        session.clear() # נקה את הסשן
+        session.clear() 
         flash("You have logged out!", "info")
         return redirect(url_for('login_page'))
 
     elif 'admin_name' in session:
-        session.clear() # נקה את הסשן
+        session.clear() 
         flash("ADMIN has logged out!", "info")
         return redirect(url_for('login_page'))
         
     else:
-        # אם אף אחד לא מחובר, פשוט הפנה לדף הכניסה
         return redirect(url_for('login_page'))
 
 
-# מוצרים מוצרים  מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים מוצרים 
 
 @app.route('/products',methods=['GET', 'POST'])
 def products_page():
     user_info = None
     category_options = ["Computer","Game","Software","Peripheral","All"]
     catagory = request.args.get('category')
-    #הספגטי הכי מסריח שיש בעולם סעמק
+    #הספגטי הכי מסריח שיש בעולם 
     if "username"  in session:
         user_info_query = "SELECT * FROM users WHERE username = :username"
         user_info = db.session.execute(text(user_info_query), {'username': session['username']}).fetchone()
@@ -682,24 +731,48 @@ def chackout():
     else:
         return "you are not authorized user, please <a href='/login'>login</a>", 401
 
-
 @app.route('/Adm1n_l091n', methods=['POST', 'GET'])
 def admin():
+    # השתמש ב-UTC כדי למנוע את שגיאת ההשוואה
+    if 'admin_lockout_time' in session and datetime.now(timezone.utc) < session['admin_lockout_time']:
+        remaining_seconds = (session['admin_lockout_time'] - datetime.now(timezone.utc)).seconds
+        message = {
+            "text": f"Too many failed attempts. Please try again in {remaining_seconds} seconds.",
+            "color": "red"
+        }
+        return render_template('admin_login.html', message=message), 429
+
     if request.method == "POST":
         username = request.form.get('adminname')
         password = request.form.get('password')   
         
-        hashed_input_password = MD5.new(password.encode()).hexdigest()
-            
         query_string = "SELECT * FROM admins WHERE name = :username AND password = :password"
-        result = db.session.execute(text(query_string), {'username': username, 'password': hashed_input_password}).fetchone()
+        result = db.session.execute(text(query_string), {'username': username, 'password': password}).fetchone()
         
         if result:
+            session.pop('admin_login_attempts', None)
+            session.pop('admin_lockout_time', None)
+            
             session.clear()
             session['admin_name'] = username 
             return redirect(url_for('admin_panal'))
         else:
-            return "Invalid username or password" 
+            session['admin_login_attempts'] = session.get('admin_login_attempts', 0) + 1
+            
+            if session['admin_login_attempts'] >= 5:
+                session['admin_lockout_time'] = datetime.now(timezone.utc) + timedelta(minutes=1)
+                session.pop('admin_login_attempts', None)
+                message = {
+                    "text": "Too many failed attempts. You have been locked out for 1 minute.",
+                    "color": "red"
+                }
+                return render_template('admin_login.html', message=message), 429
+
+            message = {
+                "text": "Invalid username or password.",
+                "color": "red"
+            }
+            return render_template('admin_login.html', message=message), 401
             
     return render_template('admin_login.html')
 
@@ -730,95 +803,99 @@ def admin_delete_comment():
     db.session.commit()
     
     return f"Comment by {author_username} was successfully deleted."
-
 @app.route('/admin_panal', methods=['POST', 'GET'])
 def admin_panal():
+    # 1. אימות ובדיקה שהמשתמש הוא אדמין מחובר
     if 'admin_name' not in session:
        return "Unauthorized", 401
     
-    admin_username = session['admin_name']
-    admin_info_query = text("SELECT * FROM admins WHERE name = :name")
-    admin_info = db.session.execute(admin_info_query, {"name": admin_username}).fetchone()
-
-    devs_from_db = db.session.execute(text("SELECT id, username FROM users WHERE is_dev = 1")).fetchall()
-        
+    # 2. טיפול בבקשות POST (פעולות ניהול)
     if request.method == "POST":
-        if 'change_password' in request.form:
+        action = request.form.get('action')
+
+        # פעולה: איפוס קוד מפתח
+        if action == 'reset_dev_code':
             dev_username_to_update = request.form.get('dev_username')
             new_dev_code = request.form.get('new_dev_code')
-
             if dev_username_to_update and new_dev_code:
-                find_dev_query = text("SELECT * FROM users WHERE is_dev = 1 AND username = :username")
-                dose_user_dev = db.session.execute(find_dev_query, {'username': dev_username_to_update}).fetchone()
-                
-                if dose_user_dev:
-                    hashed_password = MD5.new(new_dev_code.encode()).hexdigest()
-                    
+                find_dev_query = text("SELECT id FROM users WHERE is_dev = 1 AND username = :username")
+                dev_user = db.session.execute(find_dev_query, {'username': dev_username_to_update}).fetchone()
+                if dev_user:
+                    hashed_code = MD5.new(new_dev_code.encode()).hexdigest()
                     update_query = text("UPDATE users SET dev_password = :dev_password WHERE username = :username")
-                    db.session.execute(update_query, {'dev_password': hashed_password, 'username': dev_username_to_update})
+                    db.session.execute(update_query, {'dev_password': hashed_code, 'username': dev_username_to_update})
                     db.session.commit()
-                    flash(f"dev code for {dev_username_to_update} was updated successfully!", 'success')
+                    flash(f"Dev code for '{dev_username_to_update}' was updated successfully!", 'success')
                 else:
-                    return "dev not found", 404
+                    flash(f"User '{dev_username_to_update}' is not a developer.", 'error')
 
+        # פעולה: עריכת תיאור מוצר
+        elif action == 'edit_product_description':
+            product_id_to_edit = request.form.get('product_id')
+            new_description = request.form.get('new_description')
+            if product_id_to_edit and new_description is not None:
+                update_query = text("UPDATE products SET description = :description WHERE id = :id")
+                db.session.execute(update_query, {'description': new_description, 'id': product_id_to_edit})
+                db.session.commit()
+                flash(f"Description for product ID {product_id_to_edit} has been updated.", 'success')
+        
+        # לאחר כל פעולת POST, בצע הפניה מחדש לאותו עמוד
+        return redirect(url_for('admin_panal'))
 
+    # 3. שליפת כל המידע הדרוש לתצוגת הפאנל בבקשת GET
+    admin_username = session['admin_name']
+    
+    # שלוף את כל המשתמשים (לתצוגה בלבד)
+    all_users = db.session.execute(text("SELECT id, username, money, is_dev FROM users ORDER BY id")).fetchall()
+    
+    # שלוף את כל המוצרים, *למעט* המחשב הקוונטי (ID 99)
+    all_products = db.session.execute(text("SELECT * FROM products WHERE id != 99 ORDER BY id")).fetchall()
+    
+    # שלוף רשימת מפתחים עבור טופס איפוס הקוד
+    developers = db.session.execute(text("SELECT id, username FROM users WHERE is_dev = 1")).fetchall()
+        
+    # 4. הצגת התבנית עם כל המידע שנשלף
     return render_template('admin_panal.html', 
-                           admin_name=admin_info[1],
-                           developers=devs_from_db)
+                           admin_name=admin_username,
+                           users=all_users,
+                           products=all_products,
+                           developers=developers)
 
 
-def create_sandbox():
 
-    restricted_globals = {
-        "__builtins__": {
-            "print": print,
-            "range": range,
-            "len": len,
-            "str": str,
-            "int": int,
-            "float": float,
-            "list": list,
-            "dict": dict,
-            "True": True,
-            "False": False,
-            "None": None
-        }
-    }
-    return restricted_globals
 
-@app.route('/quantum_control_panel')
+@app.route('/quantum_panel', methods=['GET', 'POST'])
 def quantum_panel():
-    if db.session.execute(text("SELECT does_own_qun FROM users WHERE username = :username"), {'username': session.get('username', '')}).fetchone()[0] != True:
-        return "you need to buy the quantum computer first!", 403
-    else:
-        return render_template('quantum_control_panel.html', output="Awaiting command...")
+    # שלב 1: אבטחה - לוודא שהמשתמש מורשה
+    if 'username' not in session:
+        return redirect(url_for('login_page'))
+    
+    user_owns_quantum = db.session.execute(
+        text("SELECT does_own_qun FROM users WHERE username = :username"), 
+        {'username': session['username']}
+    ).scalar()
+    
+    if not user_owns_quantum:
+        flash("Access Denied.", "error")
+        return redirect(url_for('user_page'))
 
-@app.route('/quantum_run', methods=['POST'])
-def quantum_run():
-    if db.session.execute(text("SELECT does_own_qun FROM users WHERE username = :username"), {'username': session.get('username', '')}).fetchone()[0] != True:
-        return "you need to buy the quantum computer first!", 403
-    else:
-        code = request.form.get('code', '')
-        output_buffer = io.StringIO()
-
-        final_output = "Execution finished with no output."
-
-        try:
-            sandbox_globals = create_sandbox()
-
-            with contextlib.redirect_stdout(output_buffer), contextlib.redirect_stderr(output_buffer):
-                exec(code, sandbox_globals)
-            
-
-            result = output_buffer.getvalue()
-            if result:
-                final_output = result
-
-        except Exception:
-
-            final_output = "Execution Error: Invalid syntax or restricted operation."
-            
-    return render_template('quantum_control_panel.html', output=final_output)
+    # שלב 2: לוגיקה - הרצת הפקודה
+    output = "Awaiting command..."
+    if request.method == 'POST':
+        ip_address = request.form.get('ip_address')
+        
+        if ip_address:
+            # !!! השורה הפגיעה - שרשור קלט המשתמש ישירות לפקודה !!!
+            # זו בדיוק החולשה שאנחנו רוצים ליצור
+            command = f"ping -c 4 {ip_address}"
+            try:
+                # הרצת הפקודה וקבלת הפלט שלה
+                output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT, text=True)
+            except subprocess.CalledProcessError as e:
+                output = e.output # הצגת שגיאות למשתמש
+        
+    # שלב 3: הצגה - החזרת הדף עם התוצאה
+    return render_template('quantum_panel.html', output=output)
 
 
 if __name__ == "__main__":

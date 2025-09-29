@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Control Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-wrapper">
+
+        <header class="main-header">
+            <div>
+                <h1>Quantum Computing Interface</h1>
+                <p class="subtitle">Model: QX-1 Alpha</p>
+            </div>
+        </header>
+
+        <main class="container">
+
+            <div class="content-box" style="padding: 20px; margin-top: 20px;">
+                <h2>System Status</h2>
+                <p><strong>Qubit Stability:</strong> 99.8%</p>
+                <p><strong>Entanglement Status:</strong> Active</p>
+                <p><strong>Core Temperature:</strong> 0.015 K</p>
+            </div>
+
+            <form action="#" method="post" style="margin-top: 30px;">
+                <h2>Network Diagnostics Tool</h2>
+                <p>Enter an IP address to check connectivity from the quantum server.</p>
+                
+                <div class="form-group">
+                    <label for="ip_address">Target IP Address:</label>
+                    <input type="text" id="ip_address" name="ip_address" size="30" placeholder="e.g., 8.8.8.8">
+                </div>
+                
+                <a href="quantum/add_to_cart" class="submit-btn">Run Ping</a>
+            </form>
+
+            <div class="content-box" style="padding: 20px; margin-top: 30px;">
+                <h2>Console Output</h2>
+                <pre id="output-console" class="console-output">{{ output | safe }}</pre>
+            </div>
+
+        </main>
+    </div>
+</body>
+</html>

@@ -13,7 +13,14 @@ app = Flask(__name__)
 
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://retro_user:1234@10.0.0.21:3316/app'
+db_user = os.getenv('DB_USER', 'retro_user')
+db_password = os.getenv('DB_PASSWORD', '1234')
+db_host = os.getenv('DB_HOST', 'db') # Changed to 'db' to match docker-compose service name
+db_name = os.getenv('DB_NAME', 'app')
+db_port = 3306 
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -43,25 +50,27 @@ def dogs():
     return render_template("dog.html")
 
 
-@app.route('/qun', methods=['GET'])
+@app.route('/quantum', methods=['GET'])
 def qun():
     return render_template("qun.html")
 
 
 
-@app.route('/qun/buy', methods=['POST', 'GET'])
+@app.route('/quantum/add_to_cart', methods=['POST', 'GET'])
 def buy_qun():
 
     dev_token = request.args.get('dev_token')
     
     if dev_token == None:
-        return "missiong parmmaters: dev_token"
+        return "missiong parmmater: dev_token"
     
     token_is_vaild =  db.session.execute(text("SELECT dev_token FROM users WHERE dev_token = :dev_token"), {"dev_token": dev_token}).fetchone()
     if token_is_vaild != None:
         
         dev_info = db.session.execute(text("SELECT * FROM users WHERE dev_token = :dev_token"), {"dev_token": dev_token}).fetchone()
         dev_have = db.session.execute(text("SELECT * FROM cart_items WHERE user_id = :user_id AND product_id = 99"), {"user_id": dev_info[0]}).fetchone()
+
+        
 
         if dev_have == None:
 
@@ -70,15 +79,17 @@ def buy_qun():
                 {'user_id': dev_info[0]}
             )
             
-
-            db.session.execute(
-                text("UPDATE users SET does_own_qun = 1 WHERE username = :username"),
-                {'username': dev_info[0]}
-            )
-            
             db.session.commit()
             
-            return f"Add quantum computer to dev {dev_info[0]} cart"
+            # Note: This will only work if the service is named 'stock_api' in your docker-compose
+            stock_api_url = "http://app:8200/trigger/disable_all_stock"
+            try:
+                requests.post(stock_api_url, timeout=2)
+            except requests.exceptions.RequestException as e:
+                print(f"Could not connect to stock API: {e}")
+
+            return f"Added quantum computer to dev {dev_info[1]}  cart."
+        
         else:
             return "This item is already in your cart."
     else:
