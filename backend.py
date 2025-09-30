@@ -16,7 +16,7 @@ import base64
 
 app = Flask(__name__)
 
-app.secret_key = "super-secret-key"
+app.secret_key = "931484461332a6e568a183515f4e9a5c898684724a2cbe5391d1e67e54a88941"
 
 db_user = os.getenv('DB_USER', 'retro_user')
 db_password = os.getenv('DB_PASSWORD', '1234')
@@ -898,4 +898,4 @@ def quantum_panel():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080,host="0.0.0.0")
+    app.run(debug=False, port=8080,host="0.0.0.0")

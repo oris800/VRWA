@@ -40,4 +40,4 @@ def trigger_disable_stock():
     return jsonify(status="success", message="All items have been marked as out of stock."), 200
  
 if __name__ == "__main__":
-    app.run(debug=True, port=8200,host="0.0.0.0")
+    app.run(debug=False, port=8200,host="0.0.0.0")
