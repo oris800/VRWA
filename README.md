@@ -8,7 +8,7 @@ This project is designed as a complete offensive campaign, not just a collection
 
 ## 🎯 The Mission
 
-Your objective is to chain together **8 distinct vulnerabilities** to achieve a full system takeover (via a Reverse Shell) and capture the final flag located at `/root/flag.txt`.
+Your objective is to chain together **7 distinct vulnerabilities** to achieve a full system takeover (via a Reverse Shell).
 
 ### Key Features
 * User registration and login system.
