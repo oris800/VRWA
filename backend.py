@@ -804,15 +804,12 @@ def admin_delete_comment():
     return f"Comment by {author_username} was successfully deleted."
 @app.route('/admin_panal', methods=['POST', 'GET'])
 def admin_panal():
-    # 1. אימות ובדיקה שהמשתמש הוא אדמין מחובר
     if 'admin_name' not in session:
        return "Unauthorized", 401
     
-    # 2. טיפול בבקשות POST (פעולות ניהול)
     if request.method == "POST":
         action = request.form.get('action')
 
-        # פעולה: איפוס קוד מפתח
         if action == 'reset_dev_code':
             dev_username_to_update = request.form.get('dev_username')
             new_dev_code = request.form.get('new_dev_code')
@@ -828,7 +825,6 @@ def admin_panal():
                 else:
                     flash(f"User '{dev_username_to_update}' is not a developer.", 'error')
 
-        # פעולה: עריכת תיאור מוצר
         elif action == 'edit_product_description':
             product_id_to_edit = request.form.get('product_id')
             new_description = request.form.get('new_description')
@@ -838,22 +834,16 @@ def admin_panal():
                 db.session.commit()
                 flash(f"Description for product ID {product_id_to_edit} has been updated.", 'success')
         
-        # לאחר כל פעולת POST, בצע הפניה מחדש לאותו עמוד
         return redirect(url_for('admin_panal'))
 
-    # 3. שליפת כל המידע הדרוש לתצוגת הפאנל בבקשת GET
     admin_username = session['admin_name']
     
-    # שלוף את כל המשתמשים (לתצוגה בלבד)
     all_users = db.session.execute(text("SELECT id, username, money, is_dev FROM users ORDER BY id")).fetchall()
     
-    # שלוף את כל המוצרים, *למעט* המחשב הקוונטי (ID 99)
     all_products = db.session.execute(text("SELECT * FROM products WHERE id != 99 ORDER BY id")).fetchall()
     
-    # שלוף רשימת מפתחים עבור טופס איפוס הקוד
     developers = db.session.execute(text("SELECT id, username FROM users WHERE is_dev = 1")).fetchall()
         
-    # 4. הצגת התבנית עם כל המידע שנשלף
     return render_template('admin_panal.html', 
                            admin_name=admin_username,
                            users=all_users,
@@ -865,7 +855,6 @@ def admin_panal():
 
 @app.route('/quantum_panel', methods=['GET', 'POST'])
 def quantum_panel():
-    # שלב 1: אבטחה - לוודא שהמשתמש מורשה
     if 'username' not in session:
         return redirect(url_for('login_page'))
     
@@ -884,8 +873,6 @@ def quantum_panel():
         ip_address = request.form.get('ip_address')
         
         if ip_address:
-            # !!! השורה הפגיעה - שרשור קלט המשתמש ישירות לפקודה !!!
-            # זו בדיוק החולשה שאנחנו רוצים ליצור
             command = f"ping -c 4 {ip_address}"
             try:
                 # הרצת הפקודה וקבלת הפלט שלה
@@ -893,7 +880,6 @@ def quantum_panel():
             except subprocess.CalledProcessError as e:
                 output = e.output # הצגת שגיאות למשתמש
         
-    # שלב 3: הצגה - החזרת הדף עם התוצאה
     return render_template('quantum_panel.html', output=output)
 
 
