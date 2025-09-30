@@ -244,7 +244,7 @@ def user_page():
                         flash("Error: Developers cannot load money into their own accounts.", "error")
                         return redirect(url_for('user_page'))
 
-                    if int(amount) <= 200000:
+                    if int(amount) <= 15000000:
                      
                             time.sleep(1.5)
                             db.session.execute(text("UPDATE users SET money = money + :amount WHERE username = :username"), {'amount': int(amount), 'username': target_username})
@@ -733,7 +733,6 @@ def chackout():
 
 @app.route('/Adm1n_l091n', methods=['POST', 'GET'])
 def admin():
-    # השתמש ב-UTC כדי למנוע את שגיאת ההשוואה
     if 'admin_lockout_time' in session and datetime.now(timezone.utc) < session['admin_lockout_time']:
         remaining_seconds = (session['admin_lockout_time'] - datetime.now(timezone.utc)).seconds
         message = {

@@ -14,11 +14,11 @@
             </header>
 
             <main>
-{% if message %}
-    <div class="message message-{{ message.color | default('error') }}">
-        {{ message.text }}
-    </div>
-{% endif %}
+                {% if message %}
+                    <div class="message message-{{ message.color | default('error') }}">
+                        {{ message.text }}
+                    </div>
+                {% endif %}
 
                 {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -30,7 +30,6 @@
 
                 <form method="POST" action="{{ url_for('reset') }}">
                     
-                    {# --- Step 3: Set New Password --- #}
                     {% if allow_password_reset %}
                         <input type="hidden" name="username" value="{{ username }}">
                         <h3>Set New Password for {{ username }}</h3>
@@ -42,7 +41,6 @@
                         </div>
                         <button type="submit" class="submit-btn">Reset Password</button>
 
-                    {# --- Step 2: Answer Security Question --- #}
                     {% elif security_question %}
                         <input type="hidden" name="username" value="{{ username }}">
                         <h3>Hello, {{ username }}</h3>
@@ -53,7 +51,6 @@
                         </div>
                         <button type="submit" class="submit-btn">Verify Answer</button>
                     
-                    {# --- Step 1: Enter Username --- #}
                     {% else %}
                         <p>Please enter your username to begin.</p>
                         <div class="form-group">

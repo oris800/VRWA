@@ -4,17 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Completed</title>
-    <!-- Link to the new CSS file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
 <body>
 
     <header class="top-bar">
         <div class="user-info">
-            <!-- Replaced icon with local image -->
             <img src="{{ url_for('static', filename='imgs/icons/shopping-cart.png') }}" alt="Cart" class="header-icon">
             <span>Order Completed | {{ user_name }}</span>
         </div>
-        <!-- Added a button to go back to the shop -->
         <a href="{{ url_for('products_page') }}" class="back-to-shop-btn">
             Back to Shop
             <img src="{{ url_for('static', filename='imgs/icons/right-arrow.png') }}" alt="Back" class="button-icon">
@@ -37,7 +35,7 @@
             <p>Thank you for your order. Your items will be processed shortly.</p>
         </div>
         
-        <div class="order-summary">
+        <div class="order-summary content-box">
             <h3>Order Details</h3>
             <div class="details-grid">
                 <p><strong>fun fact: </strong></p><p>{{ fan_fact }}</p>

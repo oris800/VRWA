@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"><body>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
 
     <header class="top-bar">
         <div class="user-info">
@@ -47,12 +49,12 @@
                 </div>
 
                 <div class="item-quantity-controls">
-                    <form method="POST" style="display: inline;">
+                    <form method="POST" class="inline-form">
                         <input type="hidden" name="quantity" value="1">
                         <button type="submit" name="productid_dcrease" value="{{ item.id }}" class="quantity-btn">-</button>
                     </form>
                     <span class="item-quantity">{{ item.quantity }}</span>
-                    <form method="POST" style="display: inline;">
+                    <form method="POST" class="inline-form">
                         <input type="hidden" name="quantity" value="1">
                         <button type="submit" name="productid_increase" value="{{ item.id }}" class="quantity-btn">+</button>
                     </form>
@@ -63,7 +65,7 @@
                 </div>
                 
                 <div class="item-remove">
-                    <form method="POST" style="display: inline;">
+                    <form method="POST" class="inline-form">
                         <button type="submit" class="remove-btn" name="remove_item" value="{{ item.id }}" title="Remove item"></button>
                     </form>
                 </div>

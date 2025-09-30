@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product.name }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"><body>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
     <div class="page-wrapper">
         <a href="/cart">Shopping Cart</a>
 
@@ -20,12 +22,11 @@
                 <p class="product-description">{{ product.description or "No description is available for this product." }}</p>
     
                 <form id="stockForm" method="POST">
-                   <!-- <input type="hidden" name="stockapi" value="http://api_host:8200/chackstock?item_id={{ product.id }}"> -->
                     <input type="hidden" name="stockapi" value="http://127.0.0.1:8200/chackstock?item_id={{ product.id }}">
                     <button type="submit" id="cartButton" class="add-to-cart-btn">Add to Cart</button>
                 </form>
 
-                <div id="responseMessage" style="margin-top: 10px;"></div>
+                <div id="responseMessage"></div>
             </div>
         </div>
         
@@ -41,7 +42,7 @@
                     {% if is_admin_session %}
                         <button onclick="deleteAnyComment({{ comment.id }})">Delete (Admin)</button>
                     {% elif comment.username == session_username %}
-                        <form method="POST" action="{{ url_for('product', id=product.id) }}" style="display: inline;">
+                        <form method="POST" action="{{ url_for('product', id=product.id) }}" class="inline-form">
                             <input type="hidden" name="delete_comment_id" value="{{ comment.id }}">
                             <button type="submit">Delete</button>
                         </form>
@@ -56,30 +57,23 @@
                 <h3>Add a Comment</h3>
                 <form method="POST" action="{{ url_for('product', id=product.id) }}">
                     <textarea name="comment_text" placeholder="Write your comment here..." rows="4" required></textarea>
-                    <button type="submit" class="post-comment-btn">Post Comment</button>
+                    <button type="submit" class="post-comment-btn submit-btn">Post Comment</button>
                 </form>
             </div>
         </div>
     </div>
 
     <script>
-        // --- משתנים ופונקציות גלובליות ---
-
-        // קביעת המשתנה is_admin באופן דינמי מהשרת
-        // tojson ימיר את True/False של פייתון ל-true/false של JavaScript
         var is_admin = {{ is_admin_session | tojson }};
 
-        // פונקציה למחיקת תגובות על ידי אדמין
         function deleteAnyComment(commentId) {
             if (typeof is_admin === 'undefined' || !is_admin) {
                 console.error("PERMISSION DENIED: You must be an admin.");
                 alert("Error: Insufficient privileges for this action.");
                 return;
             }
-            // הפנייה לכתובת מחיקה ייעודית לאדמין (תצטרך לממש אותה בשרת)
             window.location.href = "/admin/delete_comment?id=" + commentId;
         }
-
         
         document.getElementById('stockForm').addEventListener('submit', async function(event) {
             event.preventDefault(); 
@@ -101,7 +95,6 @@
     
                 const responseText = await response.text();
     
-
                 if (response.ok) {
                     if (responseText === 'in_stock') {
                         responseMessage.innerHTML = `<p style="color: green;">Item added to cart!</p>`;

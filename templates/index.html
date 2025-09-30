@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RetroPwn :: Main</title>
+    <title>VRAW</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,24 +11,24 @@
 
     <style>
 
-        /* הוסף את הכלל הזה כדי לתת רקע לסרגל הניווט */
+
 .main-nav {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
-    background-color: var(--primary-color); /* <-- הוסף את השורה הזו */
-    padding: 10px 20px; /* <-- הוסף קצת ריווח פנימי לנוחות */
-    justify-content: center; /* <-- (אופציונלי) ממקם את הכפתורים במרכז */
+    background-color: var(--primary-color);
+    padding: 10px 20px;
+    justify-content: center;
 }
-        /* Slideshow container - NOW FULL WIDTH */
+
         .slideshow-container {
-            width: 100%; /* Fills the parent container's width */
+            width: 100%;
             position: relative;
-            margin: 0 auto 50px auto; /* Centered with margin at the bottom */
+            margin: 0 auto 50px auto; 
             overflow: hidden;
         }
 
-        /* Each slide */
+
         .mySlides {
             display: none;
         }
@@ -36,10 +36,10 @@
         .mySlides img {
             width: 100%;
             vertical-align: middle;
-            /* Ken Burns animation removed */
+
         }
 
-        /* Fade animation for slide transition */
+
         .fade {
             animation-name: fade;
             animation-duration: 1.5s;
@@ -121,8 +121,8 @@
         </main>
         
         <footer class="main-footer">
-            <p>(C) 2025 RETRO-PWN INDUSTRIES. ALL RIGHTS RESERVED.</p>
-            <b>Disclaimer: This is not a real application. It is designed to be a vulnerable environment for a Capture The Flag (CTF) exercise. For more details, <a href="https://example.com">please visit here</a>.</b>
+            <p>2025 VRAW MADE WITH ❤️ BY ORI SELA.</p>
+            <b>Disclaimer: This is not a real application. It is designed to be a vulnerable environment for a Capture The Flag (CTF) exercise. For more details, <a href="https://github.com/oris800/VRWA">please visit here</a>.</b>
         </footer>
     </div>
 
@@ -139,7 +139,7 @@
           slideIndex++;
           if (slideIndex > slides.length) {slideIndex = 1}
           slides[slideIndex-1].style.display = "block";
-          setTimeout(showSlides, 5000); // Kept the 5 second delay as you set it
+          setTimeout(showSlides, 5000); 
         }
     </script>
 </body>

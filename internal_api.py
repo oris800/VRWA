@@ -97,6 +97,6 @@ def buy_qun():
 
 
 if __name__ == "__main__":
-    secret_port = random.randrange(5000, 8000)
+    secret_port = random.randrange(5000, 7000)
     print(f"Internal API starting on secret random port: {secret_port}")
     app.run(debug=True, port=secret_port, host="0.0.0.0")
