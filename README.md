@@ -39,7 +39,7 @@ This CTF will test your skills in identifying and exploiting a range of vulnerab
 
 Think you have what it takes?
 
-* **Try the live challenge:** `[Link to your AWS instance here]`
+* **Try the live challenge:** `COMING SOON`
 * **Stuck? Or just curious about the design?** The full solution and a detailed explanation of each vulnerability can be found in the official write-up:
     **[WRITEUP.md](WRITEUP.md)**
 
