@@ -24,7 +24,6 @@ This CTF will test your skills in identifying and exploiting a range of vulnerab
 * Server-Side Request Forgery (SSRF)
 * Race Conditions
 * OS Command Injection
-* And more...
 
 ---
 
