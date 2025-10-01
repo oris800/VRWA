@@ -338,3 +338,57 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:foc
 }
 .dropdown:hover .dropdown-content { display: block; }
 
+/* === עיצוב לאזור מוצר הדגל (index.html) === */
+.featured-product-section {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    padding: 30px;
+    margin-bottom: 40px;
+}
+
+.featured-image {
+    flex-basis: 40%;
+}
+
+.featured-image img {
+    width: 100%;
+    border-radius: var(--border-radius);
+}
+
+.featured-content {
+    flex-basis: 60%;
+}
+
+.featured-content .section-title {
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.featured-description {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+.featured-price {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+/* === שיפורים קטנים לכותרות ולינקים כלליים === */
+.section-title {
+    font-family: var(--font-retro);
+    text-align: center;
+    font-size: 2rem;
+    margin: 40px 0 20px;
+}
+
+.main-footer {
+    font-family: 'VT323', monospace;
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}

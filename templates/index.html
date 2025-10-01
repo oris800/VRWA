@@ -3,48 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VRWA</title>
+    <title>VRWA - Vulnerable Retro Web App</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-    <style>.main-nav {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-        background-color: var(--primary-color);
-        padding: 10px 20px;
-        justify-content: center;
-    }
-    
-            .slideshow-container {
-                width: 100%;
-                position: relative;
-                margin: 0 auto 50px auto; 
-                overflow: hidden;
-            }
-    
-    
-            .mySlides {
-                display: none;
-            }
-    
-            .mySlides img {
-                width: 100%;
-                vertical-align: middle;
-    
-            }
-    
-    
-            .fade {
-                animation-name: fade;
-                animation-duration: 1.5s;
-            }
-    
-            @keyframes fade {
-                from { opacity: .4 }
-                to { opacity: 1 }
-            }</style>
 </head>
 <body>
     <div class="scanlines-overlay"></div>
@@ -52,12 +15,11 @@
     <div class="container">
         <header class="main-header">
             <h1>VRWA Vulnerable Retro Web Application</h1>
-            <p class="subtitle">> _</p>
-            
+            <p class="subtitle">> Hacking since the 80s_</p>
             {% if username %}
                 <div class="user-greeting">
                     <a href="{{ url_for('user_page') }}">
-                        <p>you are logged in as: {{ username }}</p>
+                        <p>Welcome back, {{ username }}</p>
                     </a>
                 </div>
             {% endif %}
@@ -70,28 +32,27 @@
         </nav>
 
         <div class="slideshow-container">
-            <div class="mySlides fade">
-              <img src="{{ url_for('static', filename='imgs/Bannar/Bannr1.png') }}" alt="Vintage Computer 1">
-            </div>
-            <div class="mySlides fade">
-              <img src="{{ url_for('static', filename='imgs/Bannar/Bannr2.png') }}" alt="Vintage Computer 2">
-            </div>
-            <div class="mySlides fade">
-              <img src="{{ url_for('static', filename='imgs/Bannar/Bannr3.png') }}" alt="Vintage Computer 3">
-            </div>
-            <div class="mySlides fade">
-                <img src="{{ url_for('static', filename='imgs/Bannar/Bannr4.png') }}" alt="Vintage Computer 4">
-            </div>
-           <div class="mySlides fade">
-                <img src="{{ url_for('static', filename='imgs/Bannar/Bannr5.png') }}" alt="Vintage Computer 5">
-            </div>
+            <div class="mySlides fade"><img src="{{ url_for('static', filename='imgs/Bannar/Bannr1.png') }}" alt="Banner 1"></div>
+            <div class="mySlides fade"><img src="{{ url_for('static', filename='imgs/Bannar/Bannr2.png') }}" alt="Banner 2"></div>
+            <div class="mySlides fade"><img src="{{ url_for('static', filename='imgs/Bannar/Bannr3.png') }}" alt="Banner 3"></div>
+            <div class="mySlides fade"><img src="{{ url_for('static', filename='imgs/Bannar/Bannr4.png') }}" alt="Banner 4"></div>
+           <div class="mySlides fade"><img src="{{ url_for('static', filename='imgs/Bannar/Bannr5.png') }}" alt="Banner 5"></div>
         </div>
+
         <main>
-            {% if security_question %}
-            <div class="security-question-box">
-                <h3>// SECURITY QUESTION //</h3>
-                <p>{{ security_question }}</p>
-            </div>
+            {% if featured_product %}
+            <section class="featured-product-section card">
+                <div class="featured-image">
+                    <img src="{{ featured_product.img }}" alt="{{ featured_product.name }}">
+                </div>
+                <div class="featured-content">
+                    <h2 class="section-title">--[ BEST SELLER ]--</h2>
+                    <h3>{{ featured_product.name }}</h3>
+                    <p class="featured-description">{{ featured_product.description }}</p>
+                    <p class="featured-price">${{ "%.2f"|format(featured_product.price) }}</p>
+                    <a href="{{ url_for('product', id=featured_product.id) }}" class="btn">View Product Details</a>
+                </div>
+            </section>
             {% endif %}
 
             <h2 class="section-title">--[ LATEST ARRIVALS ]--</h2>
@@ -99,10 +60,16 @@
             <div class="product-grid">
                 {% if products %}
                     {% for product in products %}
-                    <div class="product-card">
-                        <img src="{{ product.img }}" alt="{{ product.name }}">
-                        <h3>{{ product.name }}</h3>ד
-                        <p class="product-year">release year: {{ product.release_year }}</p>
+                    <div class="product-card card">
+                        <div class="product-card-image">
+                            <img src="{{ product.img }}" alt="{{ product.name }}">
+                        </div>
+                        <div class="product-card-content">
+                            <h3 class="product-name">{{ product.name }}</h3>
+                            <p class="product-details">Year: {{ product.release_year }}</p>
+                            <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                            <a href="{{ url_for('product', id=product.id) }}" class="add-to-cart-btn">View Details</a>
+                        </div>
                     </div>
                     {% endfor %}
                 {% else %}

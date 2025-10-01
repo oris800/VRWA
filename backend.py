@@ -61,11 +61,19 @@ def robots_txt():
 
 @app.route('/')
 def home():
+    featured_product_query = text("SELECT * FROM products WHERE id = 2")
+    featured_product = db.session.execute(featured_product_query).fetchone()
+    
     products = db.session.execute(text("SELECT * FROM products WHERE show_on_page = 1")).fetchall()    
+    
     if "username" in session:
-        return render_template('index.html', username=session["username"], products=products)
+         return render_template('index.html',  
+                           products=products,
+                           featured_product=featured_product,username=session["username"])
     else:
-        return render_template('index.html', products=products)
+         return render_template('index.html',  
+                           products=products,
+                           featured_product=featured_product)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -900,13 +908,6 @@ def quantum_panel():
 
         
         if ip_address:
-<<<<<<< HEAD
-            command = f"ping -c 4 {ip_address}"
-            try:
-                output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT, text=True)
-            except subprocess.CalledProcessError as e:
-                output = e.output # 
-=======
 
             command = f"ping -c 4 {ip_address}"
             try:
@@ -914,7 +915,6 @@ def quantum_panel():
                 output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT, text=True)
             except subprocess.CalledProcessError as e:
                 output = e.output 
->>>>>>> adfe663 (Add UI improvements and refactor code)
         
     return render_template('quantum_panel.html', output=output)
 
