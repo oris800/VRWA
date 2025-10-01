@@ -53,7 +53,7 @@ To run this project on your local machine, please ensure you have Git, Docker, a
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/oris800/VRWA.git](https://github.com/oris800/VRWA.git)
+    git clone https://github.com/oris800/VRWA.git
     ```
 
 2.  **Navigate to the project directory:**
