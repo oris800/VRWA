@@ -1,11 +1,15 @@
-from flask import Flask, render_template,request, redirect, url_for, session,  flash,request,jsonify , Response,make_response, send_from_directory
-from datetime import datetime, timedelta, timezone
-import random 
-import requests
+# CORRECTED AND CONSOLIDATED IMPORTS
+# --- Flask Imports ---
+from flask import (Flask, render_template, request, redirect, url_for, 
+                   session, flash, jsonify, Response, make_response, send_from_directory)
+
+# --- Database Imports ---
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
-import requests
-from Crypto.Hash import MD5,MD2
+
+# --- Standard Library Imports ---
+from datetime import datetime, timedelta, timezone
+import random 
 import os
 import time
 import contextlib
@@ -14,6 +18,9 @@ import io
 import subprocess 
 import base64
 
+# --- Third-Party Library Imports ---
+import requests
+from Crypto.Hash import MD5, MD2
 app = Flask(__name__)
 
 app.secret_key = "931484461332a6e568a183515f4e9a5c898684724a2cbe5391d1e67e54a88941"
@@ -92,76 +99,87 @@ def login_page():
         else:
             return 'Invalid username or password', 401
 
-@app.route('/reset',methods=['POST',"GET"])
+
+@app.route('/reset', methods=['POST', 'GET'])
 def reset():
     if request.method == 'POST':
-        username = request.form.get('username')
+
         if 'new_password' in request.form and session.get('can_reset_password'):
             
+            username = session.get('user_to_reset')
+            
+            if not username:
+                flash("An error occurred. Please start the password reset process again.", "error")
+                return redirect(url_for('reset'))
+
             new_password = request.form.get('new_password')
             confirm_password = request.form.get('confirm_password')
-         
-   
+
             if new_password == confirm_password:
                 hashed_new_password = MD5.new(new_password.encode()).hexdigest()
+
+
                 db_query = "UPDATE users SET password = :password WHERE username = :username"
-                #INJCTION
                 db.session.execute(text(db_query), {'password': hashed_new_password, 'username': username})
                 db.session.commit()
-                session.pop('can_reset_password', None)
 
-                flash("Password has been reset successfully!")
+                # נקה את משתני ה-session לאחר השימוש כדי למנוע שימוש חוזר
+                session.pop('can_reset_password', None)
+                session.pop('user_to_reset', None)
+
+                flash("Password has been reset successfully!", "success")
                 return redirect(url_for('login_page'))
             else:
                 message = {
                     "text": "Passwords do not match",
                     "color": "red"
                 }
-                return render_template('reset.html',message=message,allow_password_reset=True,username=username)
+                return render_template('reset.html', message=message, allow_password_reset=True, username=username)
 
-        
         elif 'security_answer' in request.form:
-            submitted_answer = request.form.get('security_answer')            
-            db_quary = "SELECT security_answer FROM users WHERE username = :username"
-            #INJCTION
-            result2 = db.session.execute(text(db_quary), {'username': username}).fetchone()
+            username = request.form.get('username')
+            submitted_answer = request.form.get('security_answer')
             
-            if submitted_answer.lower()  == result2[0].lower():
-                
+            db_query = "SELECT security_answer FROM users WHERE username = :username"
+            result = db.session.execute(text(db_query), {'username': username}).fetchone()
+            
+            if result and submitted_answer.lower() == result[0].lower():
+
                 session['can_reset_password'] = True
+                session['user_to_reset'] = username  
                 
                 message = {
-                "text": "Security answer is currect.",
-                "color": "green"
+                    "text": "Security answer is correct.",
+                    "color": "green"
                 }
-                return render_template('reset.html',message=message,allow_password_reset=True,username=username)
-            else:  
+                return render_template('reset.html', message=message, allow_password_reset=True, username=username)
+            else:
                 message = {
-                "text": "Security answer is worng.",
-                "color": "red"
+                    "text": "Security answer is wrong.",
+                    "color": "red"
                 }
-                db_quary = "SELECT security_question FROM users WHERE username = :username"
-                #INJCTION
-                result = db.session.execute(text(db_quary), {'username': username}).fetchone()
-                return render_template('reset.html',username=username ,security_question=result[0],message=message)
+                db_query = "SELECT security_question FROM users WHERE username = :username"
+                result_question = db.session.execute(text(db_query), {'username': username}).fetchone()
+                if result_question:
+                    return render_template('reset.html', username=username, security_question=result_question[0], message=message)
+                else: 
+                    flash("User not found.", "error")
+                    return redirect(url_for('reset'))
+
 
         elif 'username' in request.form:
-
-    
-            db_quary = "SELECT security_question FROM users WHERE username = :username"
-            result = db.session.execute(text(db_quary), {'username': username}).fetchone()
-
+            username = request.form.get('username')
+            db_query = "SELECT security_question FROM users WHERE username = :username"
+            result = db.session.execute(text(db_query), {'username': username}).fetchone()
 
             if result:
-                return render_template('reset.html',username=username ,security_question=result[0])
+                return render_template('reset.html', username=username, security_question=result[0])
             else:
-             message = {
-                "text": "the user not found",
-                "color": "red"
-            }
-        
-
-            return render_template('reset.html', message=message)
+                message = {
+                    "text": "The user was not found.",
+                    "color": "red"
+                }
+                return render_template('reset.html', message=message)
 
     return render_template('reset.html')
 
@@ -170,7 +188,7 @@ def reset():
 
 #-----------------------------------------
 @app.route('/login/check', methods=['POST'])
-def chack_user():
+def check_user():
     id_from_request = request.form.get('id')
 
     if id_from_request is None or id_from_request == '':
@@ -244,6 +262,9 @@ def user_page():
                     if target_user[1] == session["username"]: 
                         flash("Error: Developers cannot load money into their own accounts.", "error")
                         return redirect(url_for('user_page'))
+                    if int(amount) > 0:
+                            flash(f"The amount of cant be negtive", "error")
+                            return redirect(url_for('user_page'))
 
                     if int(amount) <= 15000000:
                      
@@ -825,9 +846,9 @@ def admin_panal():
                     update_query = text("UPDATE users SET dev_password = :dev_password WHERE username = :username")
                     db.session.execute(update_query, {'dev_password': hashed_code, 'username': dev_username_to_update})
                     db.session.commit()
-                    flash(f"Dev code for '{dev_username_to_update}' was updated successfully!", 'success')
+                    flash(f"Dev code for {dev_username_to_update} was updated successfully!", 'success')
                 else:
-                    flash(f"User '{dev_username_to_update}' is not a developer.", 'error')
+                    flash(f"User {dev_username_to_update} is not a developer.", 'error')
 
         elif action == 'edit_product_description':
             product_id_to_edit = request.form.get('product_id')
@@ -879,11 +900,21 @@ def quantum_panel():
 
         
         if ip_address:
+<<<<<<< HEAD
             command = f"ping -c 4 {ip_address}"
             try:
                 output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT, text=True)
             except subprocess.CalledProcessError as e:
                 output = e.output # 
+=======
+
+            command = f"ping -c 4 {ip_address}"
+            try:
+
+                output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT, text=True)
+            except subprocess.CalledProcessError as e:
+                output = e.output 
+>>>>>>> adfe663 (Add UI improvements and refactor code)
         
     return render_template('quantum_panel.html', output=output)
 

@@ -1,19 +1,38 @@
+/*
+  ============================================
+  VRWA - Minimalist & Clean Theme
+  ============================================
+  - Author: Gemini
+  - Date: 2025
+  - Desc: A simple, clean, and minimal monolithic 
+          stylesheet for the VRWA.
+  ============================================
+*/
+
+/* 1. Root Variables & Global Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
 :root {
-    --primary-color: #3f51b5;
-    --primary-dark: #303f9f;
-    --accent-color: #f37e48;
-    --accent-hover-color: #c51162;
-    --background-color: #f4f6f9;
-    --text-color: #333;
-    --light-text-color: #f4f6f9;
-    --card-background: #fff;
-    --border-color: #ddd;
-    --border-radius: 8px;
-    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --error-color: #dc3545;
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --danger-color: #dc3545;
+    --danger-hover: #c82333;
     --success-color: #28a745;
-    --font-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    --font-retro: 'Press Start 2P', 'VT323', monospace;
+    
+    --background-color: #f8f9fa;
+    --card-background: #ffffff;
+    --text-color: #495057;
+    --text-heading: #212529;
+    --border-color: #dee2e6;
+    
+    --border-radius: 6px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --font-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Global Resets & Body Style */
+* {
+    box-sizing: border-box;
 }
 
 body {
@@ -22,18 +41,14 @@ body {
     color: var(--text-color);
     line-height: 1.6;
     margin: 0;
-    padding: 0;
 }
 
-.page-wrapper, .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-h1, h2, h3, h4 {
-    color: var(--primary-dark);
+/* Typography */
+h1, h2, h3, h4, h5 {
+    color: var(--text-heading);
     margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
 }
 
 a {
@@ -41,363 +56,285 @@ a {
     text-decoration: none;
 }
 a:hover {
+    color: var(--primary-hover);
     text-decoration: underline;
 }
 
-/* === 2. רכיבים כלליים ושימושיים === */
-.btn, .submit-btn, .logout-button, .nav-button, .revert-btn, .add-to-cart-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background-color: var(--accent-color);
-    color: #fff;
-    text-decoration: none;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    font-weight: bold;
-    text-align: center;
-    white-space: nowrap;
+hr {
+    border: 0;
+    border-top: 1px solid var(--border-color);
+    margin: 2rem 0;
 }
 
-.btn:hover, .submit-btn:hover, .logout-button:hover, .nav-button:hover, .revert-btn:hover, .add-to-cart-btn:hover {
-    background-color: var(--accent-hover-color);
-    transform: translateY(-2px);
+img {
+    max-width: 100%;
+    height: auto;
 }
 
-.logout-button, .revert-btn, .remove-btn {
-    background-color: var(--error-color);
-}
-.logout-button:hover, .revert-btn:hover, .remove-btn:hover {
-    background-color: #c82333;
+/* 2. Layout & Containers */
+.page-wrapper, .container, .cart-container, .checkout-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
 }
 
-.content-box, .card {
+.content-box, .card, .user-card, .login-box, .product-card, .main-header {
     background-color: var(--card-background);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 20px;
-    margin-top: 20px;
-}
-
-.header-icon, .button-icon {
-    width: 24px;
-    height: 24px;
-}
-
-/* === 3. עיצוב טפסים === */
-form {
-    padding: 20px;
-}
-.inline-form {
-    display: inline;
-    padding: 0;
-    margin: 0;
-    background: none;
-    box-shadow: none;
-}
-.form-group {
-    margin-bottom: 20px;
-}
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-}
-.form-group input, .form-group textarea {
-    width: 100%;
-    padding: 12px;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    box-sizing: border-box;
-    font-size: 16px;
-}
-.form-group input:focus, .form-group textarea:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    box-shadow: 0 0 5px rgba(63, 81, 181, 0.5);
-}
-
-/* === 4. עיצובים ספציפיים לעמודים ורכיבים === */
-
-/* --- כותרות עליונות וניווט --- */
-.top-bar, .main-header {
-    background-color: var(--primary-color);
-    color: var(--light-text-color);
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 25px;
+    margin-top: 20px;
     box-shadow: var(--box-shadow);
-    flex-wrap: wrap;
-}
-.main-header .subtitle {
-    font-family: var(--font-retro);
-    text-shadow: 2px 2px 0 #000;
-    font-size: 1.2rem;
-}
-.user-info {
-    font-size: 1.2rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
-/* --- עמוד מוצרים (products.html) --- */
+/* 3. Buttons */
+.btn, .submit-btn, .login-btn, .nav-button, .add-to-cart-btn, .back-to-shop-btn, .order-btn, .admin-delete-btn, .quantum-button, .post-comment-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 700;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+
+.submit-btn, .login-btn, .add-to-cart-btn, .order-btn, .quantum-button, .nav-button, .post-comment-btn {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+.submit-btn:hover, .login-btn:hover, .add-to-cart-btn:hover, .order-btn:hover, .quantum-button:hover, .nav-button:hover, .post-comment-btn:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    color: #fff;
+    text-decoration: none;
+}
+
+.logout-button, .revert-btn, .remove-btn, .admin-delete-btn {
+    background-color: var(--danger-color);
+    color: #fff;
+    border-color: var(--danger-color);
+}
+.logout-button:hover, .revert-btn:hover, .remove-btn:hover, .admin-delete-btn:hover {
+    background-color: var(--danger-hover);
+    border-color: var(--danger-hover);
+    color: #fff;
+    text-decoration: none;
+}
+
+.logout-button { margin: 20px auto 0; display: table; }
+
+/* 4. Forms */
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.5rem; font-weight: 700; }
+input[type="text"], input[type="password"], input[type="number"], textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+}
+input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* 5. Page-Specific Styles */
+/* Header & Nav */
+.main-header { text-align: center; }
+.main-nav, .page-nav { display: flex; align-items: center; gap: 20px; justify-content: center; margin: 20px 0; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+
+/* Index & Products Grid */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
-    margin-top: 30px;
+    margin-top: 20px;
 }
-.product-card {
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease;
-}
-.product-card:hover {
-    transform: translateY(-5px);
-}
-.product-card-image img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
-.product-card-content {
-    padding: 15px;
-    flex-grow: 1;
-}
+.product-card { padding: 0; } /* Remove padding for edge-to-edge image */
+.product-card-image img { width: 100%; height: 200px; object-fit: cover; border-top-left-radius: var(--border-radius); border-top-right-radius: var(--border-radius); }
+.product-card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+.product-card-content .add-to-cart-btn { margin-top: auto; }
 
-/* --- עמוד עגלת קניות (cart.html) --- */
+/* Single Product */
+.product-container { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; align-items: start; }
+.product-price { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
+.comment { border-bottom: 1px solid var(--border-color); padding: 15px 0; }
+.comment:last-child { border-bottom: none; }
+
+/* Cart */
+.cart-content {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
 .cart-header {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 0.5fr;
-    font-weight: bold;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-    text-align: center;
-}
-.cart-header .header-product {
-    text-align: left;
-}
-.item-card {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 0.5fr;
-    align-items: center;
-    text-align: center;
-    padding: 15px 0;
+    grid-template-columns: 2fr 1fr 1fr 100px;
+    gap: 20px;
+    padding: 15px 20px;
+    font-weight: 700;
+    color: var(--text-heading);
+    background-color: #f8f9fa; /* Slightly different background for header */
     border-bottom: 1px solid var(--border-color);
 }
-.item-product {
-    display: flex;
+.header-product { text-align: left; }
+.header-quantity, .header-total { text-align: center; }
+
+.item-card {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 100px;
     align-items: center;
-    gap: 15px;
-    text-align: left;
+    gap: 20px;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
 }
-.item-card .product-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 4px;
-    object-fit: cover;
-}
-.item-quantity-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-}
-.quantity-btn {
-    background-color: #ddd;
-    color: var(--text-color);
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-}
-.remove-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    position: relative;
-}
-.remove-btn::before, .remove-btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 15px;
-    height: 2px;
-    background-color: #fff;
-    transform-origin: center;
-}
-.remove-btn::before { transform: translate(-50%, -50%) rotate(45deg); }
-.remove-btn::after { transform: translate(-50%, -50%) rotate(-45deg); }
+.item-card:last-child { border-bottom: none; }
+.item-product { display: flex; align-items: center; gap: 15px; }
+.item-card .product-image { width: 80px; height: 80px; object-fit: cover; border-radius: var(--border-radius); }
+.item-details .item-name { font-weight: 700; margin: 0; color: var(--text-heading); }
+.item-details .item-price { font-size: 0.9rem; color: var(--text-color); margin: 0; }
+.item-quantity-controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.quantity-btn { background-color: #e9ecef; border: 1px solid #ced4da; color: #495057; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; }
+.item-total, .item-remove { text-align: center; }
+.item-total { font-weight: 700; }
+.remove-btn { background: none; border: none; font-size: 1.5rem; color: var(--danger-color); cursor: pointer; padding: 0 10px; }
+.remove-btn::before { content: '×'; } /* Simple X */
 .cart-summary {
     display: flex;
     justify-content: flex-end;
-    align-items: center;
+    align-items: baseline;
     gap: 20px;
+    margin-top: 20px;
     padding-top: 20px;
-    border-top: 2px solid #eee;
-    margin-top: 20px;
+    border-top: 1px solid var(--border-color);
 }
-
-/* --- עמוד פרופיל משתמש (user.html) --- */
-.user-card {
-    max-width: 600px;
-    margin: 40px auto;
-}
-.card-header h1 {
-    justify-content: center;
-}
-.password-details {
+.summary-label { font-size: 1.2rem; font-weight: 700; }
+.summary-total { font-size: 1.8rem; font-weight: 700; color: var(--text-heading); }
+.empty-cart {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: var(--card-background);
     border: 1px solid var(--border-color);
-    padding: 15px;
-    margin-top: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
-.navigation-buttons {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 20px;
+.empty-cart-icon {
+    width: 80px;
+    height: auto;
+    margin-bottom: 20px;
+    opacity: 0.6;
 }
-.logout-button {
-    margin: 20px auto 0 auto;
-    width: fit-content;
-}
-.dev-badge {
-    background-color: var(--success-color);
-    color: white;
-    padding: 4px 8px;
-    font-size: 0.8em;
-    font-weight: bold;
-    border-radius: 12px;
-    margin-left: 10px;
+.empty-cart .back-to-shop-btn { margin-top: 20px; }
+
+
+/* User Profile */
+.user-card { max-width: 700px; margin: 40px auto; }
+.dev-badge { background-color: var(--success-color); color: white; padding: 3px 8px; font-size: 0.8em; border-radius: 10px; }
+.dev-token-section { background-color: var(--background-color); border: 1px solid var(--border-color); padding: 15px; margin-top: 20px; border-radius: var(--border-radius); }
+.password-details summary { cursor: pointer; font-weight: 700; }
+.navigation-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+
+/* Icon Sizing and Alignment */
+.header-icon, .button-icon {
+    height: 1.2em; /* Set icon height relative to font size */
+    width: 1.2em;
     vertical-align: middle;
+    margin-right: 8px;
 }
-.dev-token-section {
-    background-color: #f0f8ff;
-    border: 1px solid #d1e7fd;
-    padding: 15px;
-    margin-top: 20px;
-}
-.dev-token-section h3 {
-    margin-top: 0;
-    color: #0d6efd;
+.user-card .card-header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .transaction-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
 }
 .transaction-table th, .transaction-table td {
     border: 1px solid var(--border-color);
-    padding: 8px;
+    padding: 8px 12px;
     text-align: left;
 }
 .transaction-table th {
-    background-color: #f2f2f2;
-}
-.quantum-button {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    margin-top: 15px;
-    background: linear-gradient(45deg, #4f00bc, #9d00c6);
-    color: white;
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.1em;
-    box-sizing: border-box;
-}
-.quantum-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(128, 0, 255, 0.4);
-    text-decoration: none;
+    background-color: var(--background-color);
+    font-weight: 700;
 }
 
+/* Quantum Panel */
 .console-output {
-    background-color: #2c3e50;
-    color: #2ecc71;
-    font-family: var(--font-retro);
+    background-color: #212529;
+    color: #f8f9fa;
+    font-family: monospace;
     padding: 15px;
     min-height: 150px;
     white-space: pre-wrap;
-    word-wrap: break-word;
-    font-size: 1.1rem;
+    border-radius: var(--border-radius);
 }
 
-/* ===================================== */
-/* Fix for Navigation & Dropdown Menu   */
-/* ===================================== */
+/* Slideshow */
+.slideshow-container { margin: 20px 0; }
+.mySlides { display: none; }
+.fade { animation: fade 1.5s; }
+@keyframes fade { from { opacity: 0.4; } to { opacity: 1; } }
 
-.page-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #ddd;
-}
+/* Messages (Flash) & Dropdown */
+.message { padding: 1rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: var(--border-radius); }
+.message-error { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+.message-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+.message-info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
 
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
+.dropdown { position: relative; display: inline-block; }
 
 .dropbtn {
-    background-color: var(--primary-color);
-    color: var(--light-text-color);
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 8px 16px;
+    font-size: 1rem;
     cursor: pointer;
     border-radius: var(--border-radius);
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease-in-out;
 }
-
 .dropbtn:hover {
-    background-color: var(--primary-dark);
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+.dropbtn::after {
+    content: ' ▼';
+    font-size: 0.7em;
+    margin-left: 5px;
 }
 
 .dropdown-content {
-    display: none; /* הסתר את התפריט כברירת מחדל */
+    display: none;
     position: absolute;
     background-color: var(--card-background);
-    min-width: 180px;
+    min-width: 200px;
     box-shadow: var(--box-shadow);
-    z-index: 10; /* ודא שהתפריט יופיע מעל אלמנטים אחרים */
+    z-index: 1;
+    border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
+    margin-top: 5px;
     overflow: hidden;
 }
-
 .dropdown-content a {
     color: var(--text-color);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
-    text-align: left;
 }
-
 .dropdown-content a:hover {
-    background-color: #f1f1f1;
-}
-
-/* החוק החשוב ביותר: הצג את התפריט במעבר עכבר */
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.home-link {
-    font-weight: bold;
+    background-color: var(--primary-color);
+    color: #fff;
     text-decoration: none;
-    color: var(--primary-dark);
 }
+.dropdown:hover .dropdown-content { display: block; }
+

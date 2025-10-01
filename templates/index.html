@@ -3,60 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VRAW</title>
+    <title>VRWA</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-
-    <style>
-
-
-.main-nav {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    background-color: var(--primary-color);
-    padding: 10px 20px;
-    justify-content: center;
-}
-
-        .slideshow-container {
-            width: 100%;
-            position: relative;
-            margin: 0 auto 50px auto; 
-            overflow: hidden;
-        }
-
-
-        .mySlides {
-            display: none;
-        }
-
-        .mySlides img {
-            width: 100%;
-            vertical-align: middle;
-
-        }
-
-
-        .fade {
-            animation-name: fade;
-            animation-duration: 1.5s;
-        }
-
-        @keyframes fade {
-            from { opacity: .4 }
-            to { opacity: 1 }
-        }
-    </style>
+    <style>.main-nav {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        background-color: var(--primary-color);
+        padding: 10px 20px;
+        justify-content: center;
+    }
+    
+            .slideshow-container {
+                width: 100%;
+                position: relative;
+                margin: 0 auto 50px auto; 
+                overflow: hidden;
+            }
+    
+    
+            .mySlides {
+                display: none;
+            }
+    
+            .mySlides img {
+                width: 100%;
+                vertical-align: middle;
+    
+            }
+    
+    
+            .fade {
+                animation-name: fade;
+                animation-duration: 1.5s;
+            }
+    
+            @keyframes fade {
+                from { opacity: .4 }
+                to { opacity: 1 }
+            }</style>
 </head>
 <body>
     <div class="scanlines-overlay"></div>
 
     <div class="container">
         <header class="main-header">
-            <h1>VRWA Vulnerable Retro Web Application </h1>
+            <h1>VRWA Vulnerable Retro Web Application</h1>
             <p class="subtitle">> _</p>
             
             {% if username %}
@@ -69,30 +64,26 @@
         </header>
 
         <nav class="main-nav">
-            <a href="{{ url_for('products_page') }}"> Products</a>
-            <a href="{{ url_for('cart') }}"> Cart</a>
-            <a href="{{ url_for('login_page') }}"> Login</a>
+            <a href="{{ url_for('products_page') }}">Products</a>
+            <a href="{{ url_for('cart') }}">Cart</a>
+            <a href="{{ url_for('login_page') }}">Login</a>
         </nav>
 
         <div class="slideshow-container">
             <div class="mySlides fade">
-              <img src="static/imgs/Bannar/Bannr1.png" alt="Vintage Computer 1">
+              <img src="{{ url_for('static', filename='imgs/Bannar/Bannr1.png') }}" alt="Vintage Computer 1">
             </div>
-            
             <div class="mySlides fade">
-              <img src="static/imgs/Bannar/Bannr2.png" alt="Vintage Computer 2">
+              <img src="{{ url_for('static', filename='imgs/Bannar/Bannr2.png') }}" alt="Vintage Computer 2">
             </div>
-            
             <div class="mySlides fade">
-              <img src="static/imgs/Bannar/Bannr3.png" alt="Vintage Computer 3">
+              <img src="{{ url_for('static', filename='imgs/Bannar/Bannr3.png') }}" alt="Vintage Computer 3">
             </div>
-            
             <div class="mySlides fade">
-                <img src="static/imgs/Bannar/Bannr4.png" alt="Vintage Computer 4">
+                <img src="{{ url_for('static', filename='imgs/Bannar/Bannr4.png') }}" alt="Vintage Computer 4">
             </div>
-		
-	   <div class="mySlides fade">
-                <img src="static/imgs/Bannar/Bannr5.png" alt="Vintage Computer 4">
+           <div class="mySlides fade">
+                <img src="{{ url_for('static', filename='imgs/Bannar/Bannr5.png') }}" alt="Vintage Computer 5">
             </div>
         </div>
         <main>
@@ -110,8 +101,8 @@
                     {% for product in products %}
                     <div class="product-card">
                         <img src="{{ product.img }}" alt="{{ product.name }}">
-                        <h3>{{ product.name }}</h3>
-                        <p class="product-year">Circa: {{ product.release_year }}</p>
+                        <h3>{{ product.name }}</h3>ד
+                        <p class="product-year">release year: {{ product.release_year }}</p>
                     </div>
                     {% endfor %}
                 {% else %}
@@ -121,26 +112,11 @@
         </main>
         
         <footer class="main-footer">
-            <p>2025 VRAW MADE WITH ❤️ BY ORI SELA.</p>
+            <p>2025 VRWA MADE WITH ❤️ BY ORI SELA.</p>
             <b>Disclaimer: This is not a real application. It is designed to be a vulnerable environment for a Capture The Flag (CTF) exercise. For more details, <a href="https://github.com/oris800/VRWA">please visit here</a>.</b>
         </footer>
     </div>
-
-    <script>
-        let slideIndex = 0;
-        showSlides();
-
-        function showSlides() {
-          let i;
-          let slides = document.getElementsByClassName("mySlides");
-          for (i = 0; i < slides.length; i++) {
-            slides[i].style.display = "none";
-          }
-          slideIndex++;
-          if (slideIndex > slides.length) {slideIndex = 1}
-          slides[slideIndex-1].style.display = "block";
-          setTimeout(showSlides, 5000); 
-        }
-    </script>
+    
+    <script src="{{ url_for('static', filename='js/slideshow.js') }}"></script>
 </body>
 </html>

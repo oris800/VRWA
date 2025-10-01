@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="page-wrapper">
+    <div class="page-wrapper"
+         data-is-admin="{{ is_admin_session | tojson }}"
+         data-delete-url="{{ url_for('admin_delete_comment') }}">
+
         <a href="/cart">Shopping Cart</a>
 
         <div class="product-container">
@@ -20,8 +23,8 @@
                 <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
                 <p class="product-release-date">Release Date: {{ product.release_year }}</p>
                 <p class="product-description">{{ product.description or "No description is available for this product." }}</p>
-    
-                <form id="stockForm" method="POST">
+
+                <form id="stockForm" method="POST" data-post-url="{{ url_for('product', id=product.id) }}">
                     <input type="hidden" name="stockapi" value="http://127.0.0.1:8200/chackstock?item_id={{ product.id }}">
                     <button type="submit" id="cartButton" class="add-to-cart-btn">Add to Cart</button>
                 </form>
@@ -29,7 +32,7 @@
                 <div id="responseMessage"></div>
             </div>
         </div>
-        
+
         <hr>
 
         <div class="comments-section">
@@ -38,9 +41,9 @@
                 {% for comment in comments %}
                 <div class="comment">
                     <p><strong>{{ comment.username }}:</strong> {{ comment.comment_text }}</p>
-                    
+
                     {% if is_admin_session %}
-                        <button onclick="deleteAnyComment({{ comment.id }})">Delete (Admin)</button>
+                        <button class="admin-delete-btn" data-comment-id="{{ comment.id }}">Delete (Admin)</button>
                     {% elif comment.username == session_username %}
                         <form method="POST" action="{{ url_for('product', id=product.id) }}" class="inline-form">
                             <input type="hidden" name="delete_comment_id" value="{{ comment.id }}">
@@ -48,9 +51,9 @@
                         </form>
                     {% endif %}
                 </div>
-            {% else %}
+                {% else %}
                 <p>No comments yet.</p>
-            {% endfor %}
+                {% endfor %}
             </div>
 
             <div class="add-comment-form">
@@ -63,61 +66,6 @@
         </div>
     </div>
 
-    <script>
-        var is_admin = {{ is_admin_session | tojson }};
-
-        function deleteAnyComment(commentId) {
-            if (typeof is_admin === 'undefined' || !is_admin) {
-                console.error("PERMISSION DENIED: You must be an admin.");
-                alert("Error: Insufficient privileges for this action.");
-                return;
-            }
-            window.location.href = "/admin/delete_comment?id=" + commentId;
-        }
-        
-        document.getElementById('stockForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); 
-    
-            const cartButton = document.getElementById('cartButton');
-            const responseMessage = document.getElementById('responseMessage');
-            const formData = new URLSearchParams(new FormData(event.target));
-            
-            cartButton.disabled = true;
-            cartButton.innerText = 'Checking...';
-            responseMessage.innerHTML = '';
-    
-            try {
-                const response = await fetch("{{ url_for('product', id=product.id) }}", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData
-                });
-    
-                const responseText = await response.text();
-    
-                if (response.ok) {
-                    if (responseText === 'in_stock') {
-                        responseMessage.innerHTML = `<p style="color: green;">Item added to cart!</p>`;
-                        cartButton.innerText = 'Added!';
-                    } else if (responseText === 'out_of_stock') {
-                        responseMessage.innerHTML = `<p style="color: red;">this item is out of stock.</p>`;
-                        cartButton.innerText = 'Out of Stock';
-                    } else {
-                        responseMessage.innerHTML = `<p style="color: orange;">${responseText}</p>`;
-                    }
-                } else {
-                    responseMessage.innerHTML = `<p style="color: red;">Error: ${responseText}</p>`;
-                    cartButton.disabled = false;
-                    cartButton.innerText = 'Try Again';
-                }
-    
-            } catch (error) {
-                console.error('Fetch Error:', error);
-                responseMessage.innerHTML = '<p style="color: red;">A network error occurred.</p>';
-                cartButton.disabled = false;
-                cartButton.innerText = 'Try Again';
-            }
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/product.js') }}" defer></script>
 </body>
 </html>

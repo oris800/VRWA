@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnostic Console</title>
+    <title>Quantum Diagnostic Console</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
@@ -12,8 +12,8 @@
 
         <header class="main-header">
             <div>
-                <h1>Commodore 65 Diagnostic Interface</h1>
-                <p class="subtitle">Model: C65 Prototype</p>
+                <h1>Quantum Computer Diagnostic Interface</h1>
+                <p class="subtitle">Model: QC Prototype</p>
             </div>
         </header>
 
@@ -21,9 +21,9 @@
 
             <div class="content-box">
                 <h2>System Status</h2>
-                <p><strong>CPU:</strong> CSG 65CE02 @ 3.54 MHz</p>
-                <p><strong>RAM:</strong> 128 KB (expandable to 8 MB)</p>
-                <p><strong>Disk Drive:</strong> 3.5" Floppy - OK</p>
+                <p><strong>QPU:</strong> Quantum Processing Unit @ 5.0 GHz</p>
+                <p><strong>Qubits:</strong> 512 (expandable to 4096)</p>
+                <p><strong>Storage:</strong> Cryogenic Memory - OK</p>
             </div>
 
             <form action="{{ url_for('quantum_panel') }}" method="post">

@@ -25,7 +25,11 @@
                 {% endif %}
             {% endwith %}
                 <div id="errorMessageContainer"></div>
-                <form id="loginForm" method="post">
+                
+                <form id="loginForm" method="post" 
+                      data-login-url="{{ url_for('login_page') }}" 
+                      data-check-url="{{ url_for('check_user') }}">
+                    
                     <div class="form-group">
                         <input type="text" id="username" name="username" placeholder="Username" required>
                     </div>
@@ -40,57 +44,7 @@
             </main>
         </div>
     </div>
-
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
     
-            const errorContainer = document.getElementById('errorMessageContainer');
-            errorContainer.innerHTML = '';
-            
-            const urlEncodedData = new URLSearchParams(new FormData(event.target));
-    
-            try {
-    
-                const loginResponse = await fetch("{{ url_for('login_page') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: urlEncodedData, 
-                });
-    
-                if (loginResponse.ok) {
-                    const userId = loginResponse.headers.get('X-User-ID');
-                    const redirectUrl = loginResponse.headers.get('X-Redirect-Url');
-                    
-                    console.log('Login successful. User ID from header:', userId);
-    
-                    const hiddenUrlEncodedData = new URLSearchParams();
-                    hiddenUrlEncodedData.append('id', userId);
-    
-                    await fetch("{{ url_for('chack_user') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: hiddenUrlEncodedData
-                    });
-                    
-                    console.log('Hidden request sent to /login/check');
-                    
-                    window.location.href = redirectUrl;
-    
-                } else {
-                    const errorMessage = await loginResponse.text();
-                    errorContainer.innerHTML = `<div class="message message-error">${errorMessage}</div>`;
-                }
-    
-            } catch (error) {
-                console.error('An error occurred:', error);
-                errorContainer.innerHTML = `<div class="message message-error">An unexpected error occurred.</div>`;
-            }
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/login.js') }}" defer></script>
 </body> 
 </html>
