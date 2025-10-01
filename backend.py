@@ -167,7 +167,8 @@ def reset():
 
 
 
-# שנה את methods ל-POST כדי שהפונקציה תוכל לקבל נתונים
+
+#-----------------------------------------
 @app.route('/login/check', methods=['POST'])
 def chack_user():
     id_from_request = request.form.get('id')
@@ -186,7 +187,7 @@ def chack_user():
             return "True"
     except Exception as e:
         return "500 INTERNAL SERVER ERROR", 500
-
+#-----------------------------------------
 
 @app.route('/user', methods=['GET', 'POST'])
 def user_page():
@@ -376,6 +377,9 @@ def user_page():
                            revealed_dev_token=None, 
                            owns_quantum_computer=user_owns_quantum,
                            transactions=transactions)
+
+
+
 
 
 @app.route('/logout')
@@ -853,6 +857,8 @@ def admin_panal():
 
 
 
+
+
 @app.route('/quantum_panel', methods=['GET', 'POST'])
 def quantum_panel():
     if 'username' not in session:
@@ -867,18 +873,17 @@ def quantum_panel():
         flash("Access Denied.", "error")
         return redirect(url_for('user_page'))
 
-    # שלב 2: לוגיקה - הרצת הפקודה
     output = "Awaiting command..."
     if request.method == 'POST':
         ip_address = request.form.get('ip_address')
+
         
         if ip_address:
             command = f"ping -c 4 {ip_address}"
             try:
-                # הרצת הפקודה וקבלת הפלט שלה
                 output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT, text=True)
             except subprocess.CalledProcessError as e:
-                output = e.output # הצגת שגיאות למשתמש
+                output = e.output # 
         
     return render_template('quantum_panel.html', output=output)
 
