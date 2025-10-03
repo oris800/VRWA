@@ -29,7 +29,6 @@ Your objective is to chain together **7 distinct vulnerabilities** to achieve a 
 
 Think you have what it takes?
 
-* **Try the live challenge:** `COMING SOON`
 * **Stuck? Or just curious about the design?** The full solution and a detailed explanation of each vulnerability can be found in the official write-up:
     **[WRITEUP.md](WRITEUP.md)**
 
