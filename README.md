@@ -60,7 +60,7 @@ To run this project on your local machine, please ensure you have Git, Docker, a
     Once the containers are up and running, navigate to `http://localhost:8080` in your web browser.
 
 5.  **Shutting down the environment:**
-    To stop and remove the containers, press `Ctrl+C` in the terminal and then run:
+    To stop and remove the containers run:
     ```bash
     docker-compose down
     ```
