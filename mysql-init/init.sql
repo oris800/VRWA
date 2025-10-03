@@ -168,7 +168,7 @@ INSERT INTO `users` (`id`, `username`, `password`, `security_question`, `securit
 (1998, 'david', 'aV5^bN&mJ7@z!xK*lP', 'Favorite food?', 'pizza', 230, 0, 0, NULL, NULL, 0),
 (2048, 'eve', 'qY6!uI@oP#sD&fG^hJ', 'What is 1+1?', '2', 377, 0, 0, NULL, NULL, 0),
 (2381, 'guest', 'eT8*dC&vB1@n!mK#lZ', 'Favorite color?', 'red', 501, 1, 0, NULL, NULL, 0),
-(3354, 'customer35', 'iO3^uY&tA2@s!dF*gH', '@Y@@!!#^@@^!@!!!@#!%', '!!#%^@^@&^&^##^%HETHGGGGDD', 350, 0, 1, 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4', '9f9c78601a4f4820874e03f0b07a5f67', 0),
+(3354, 'customer35', 'aV5^bN&mJ7@z!xK*lP', '@Y@@!!#^@@^!@!!!@#!%', '!!#%^@^@&^&^##^%HETHGGGGDD', 350, 0, 1, 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4', '9f9c78601a4f4820874e03f0b07a5f67', 0),
 (3456, 'frank', 'pL1#kG@jH9&fT^mN*b', 'City of birth?', 'london', 419, 0, 0, NULL, NULL, 0),
 (3776, 'grace', 'xS7*zX&cE5@v!bN#mK', 'First pet name?', 'shadow', 299, 0, 0, NULL, NULL, 0),
 (4208, 'heidi', 'cF6!vB&nJ3@m!kL*hG', 'Favorite food?', 'sushi', 523, 0, 0, NULL, NULL, 0),
