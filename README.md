@@ -16,16 +16,6 @@ Your objective is to chain together **7 distinct vulnerabilities** to achieve a 
 * Product review and comment system.
 * A complete shopping cart and checkout system.
 
-### Vulnerabilities Featured
-This CTF will test your skills in identifying and exploiting a range of vulnerabilities, including:
-* Broken Authentication & Account Takeover
-* Business Logic Flaws
-* SQL Injection (Blind)
-* Server-Side Request Forgery (SSRF)
-* Race Conditions
-* OS Command Injection
-
----
 
 ## 🛠️ Tech Stack
 
