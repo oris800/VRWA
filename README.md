@@ -52,7 +52,7 @@ To run this project on your local machine, please ensure you have Git, Docker, a
 
 3.  **Build and run the environment using Docker Compose:**
     ```bash
-    docker-compose up --build
+    docker-compose up --build -d
     ```
     *(Note: Depending on your Docker installation, you may need to run this command with `sudo`)*
 
